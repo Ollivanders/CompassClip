@@ -15,14 +15,14 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 def main(chain, start_block, end_block):
     job = ContractExport(
+        chain=chain,
         start_block=start_block,
         end_block=end_block,
-        chain=chain,
     )
     job = BlockExport(
+        chain=chain,
         start_block=start_block,
         end_block=end_block,
-        chain=chain,
     )
     job.run()
 

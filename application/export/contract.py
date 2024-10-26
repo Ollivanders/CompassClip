@@ -1,34 +1,27 @@
 import json
-from urllib import request
 
-
+from blockchainetl.jobs.exporters.composite_item_exporter import CompositeItemExporter
+from output import CONTRACT_FIELDS
+from constants import CONTRACT_ADDRESSES
+from ethereumetl.jobs.exporters.contracts_item_exporter import contracts_item_exporter
 from ethereumetl.json_rpc_requests import generate_get_code_json_rpc
 from ethereumetl.mappers.contract_mapper import EthContractMapper
-
 from ethereumetl.service.eth_contract_service import EthContractService
 from ethereumetl.utils import rpc_response_to_result
-
-from constants import CONTRACT_ADDRESSES
-
-from ethereumetl.jobs.exporters.blocks_and_transactions_item_exporter import (
-    blocks_and_transactions_item_exporter,
-)
-from ethereumetl.jobs.exporters.contracts_item_exporter import contracts_item_exporter
 from export.base import BaseExport
 from utils import get_data_path
 
 
 class ContractExport(BaseExport):
-    def __init__(
-        self,
-        start_block,
-        end_block,
-        chain,
-    ):
-        super().__init__(start_block, end_block, chain)
-        self.item_exporter = contracts_item_exporter(get_data_path(chain, "contract"))
+    def __init__(self, chain, start_block, end_block):
+        super().__init__(chain, start_block, end_block)
         self.contract_service = EthContractService()
         self.contract_mapper = EthContractMapper()
+
+        self.item_exporter = CompositeItemExporter(
+            filename_mapping={"contract": get_data_path(self.chain, "contracts")},
+            field_mapping={"contract": CONTRACT_FIELDS},
+        )
 
     def _export(self):
         self.batch_work_executor.execute(

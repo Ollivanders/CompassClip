@@ -1,5 +1,3 @@
-from blockchainetl.jobs.exporters.composite_item_exporter import CompositeItemExporter
-
 BLOCK_FIELDS_TO_EXPORT = [
     "number",
     "hash",
@@ -47,11 +45,11 @@ TRANSACTION_FIELDS_TO_EXPORT = [
 ]
 
 
-def blocks_and_transactions_item_exporter(blocks_output=None, transactions_output=None):
-    return CompositeItemExporter(
-        filename_mapping={"block": blocks_output, "transaction": transactions_output},
-        field_mapping={
-            "block": BLOCK_FIELDS_TO_EXPORT,
-            "transaction": TRANSACTION_FIELDS_TO_EXPORT,
-        },
-    )
+CONTRACT_FIELDS = [
+    "address",
+    "bytecode",
+    "function_sighashes",
+    "is_erc20",
+    "is_erc721",
+    "block_number",
+]

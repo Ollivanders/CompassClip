@@ -5,6 +5,7 @@ Runs SuperSet JSON-RPC calls to a chain, storing the result in S3.
 Provides a wrapper library for making RPC calls to these files to collect desired information
 
 ## Installation
+Run python3.11 or lower.
 
 ```
 pip install ethereum-etl
