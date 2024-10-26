@@ -23,7 +23,7 @@ pip install ethereum-etl
 ## eth_ method focuses
 
 - `eth_getCode`
-- `eth_getStorageAttr`
+- `eth_getStorageAt`
 - `eth_getTransaction`
 
 ## Feature Improvements 
