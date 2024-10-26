@@ -41,7 +41,7 @@ https://ethereum.org/en/developers/docs/nodes-and-clients/archive-nodes/#what-is
 https://lmdb.readthedocs.io/en/release/ - lmdb, python client used to investigate database structure
 on file
 
-![took a while to download](image.png)
+![took a while to download](docs/image.png)
 
 as specified at *https://github.com/erigontech/erigon/blob/main/ethdb/Readme.md*
 mdbx file format is a key-value database, utilising B+ trees in order to store reciept, transaction
@@ -119,7 +119,7 @@ assume a "node" is running and thus expect all the checksums to be correct. If o
 transactions to only collect ones that touched specific contract addresses, this would break the
 ability to "run on the chain". 
 
-![building new erigon mbdx.dat files](image-1.png)
+![building new erigon mbdx.dat files](docs/image-1.png)
 
 
 The advantage of an mdbx.dat storage format is that an Erigon archive node would be able to read
