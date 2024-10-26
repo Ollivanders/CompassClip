@@ -10,6 +10,21 @@ Provides a wrapper library for making RPC calls to these files to collect desire
 pip install ethereum-etl
 ```
 
+## aims
+
+- How many chains supported? - any that have an rpc client
+- Include with n degree proximity to origin contract
+  - can collect addresses and then re-run a separate exporter to append these to the file stores
+- Include all transactions - remove address filtering
+- RPC methods can it respond to - lib implementation for each as below. Focused on key look up
+  patterns
+
+## eth_ method focuses
+
+- `eth_getCode`
+- `eth_getStorageAttr`
+- `eth_getTransaction`
+
 ## Feature Improvements 
 
 * As discussed below, use an Erigon node directly to hit the database directly and ignore the
