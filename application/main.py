@@ -19,6 +19,8 @@ def main(chain, start_block, end_block):
         start_block=start_block,
         end_block=end_block,
     )
+    job.run()
+
     job = BlockExport(
         chain=chain,
         start_block=start_block,
