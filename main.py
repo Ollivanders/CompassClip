@@ -1,11 +1,9 @@
 import shutil
+from export.contract import ContractExport
 from log_utils import logging_basic_config
-from ethereumetl.providers.auto import get_provider_from_uri
-from ethereumetl.thread_local_proxy import ThreadLocalProxy
 
 from dirs import DATA_DIR
-from export_job import BlockExport
-from utils import get_provider_uri
+from export.blocks import BlockExport
 
 logging_basic_config()
 
@@ -16,12 +14,18 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def main(chain, start_block, end_block):
-    job = BlockExport(
+    job = ContractExport(
         start_block=start_block,
         end_block=end_block,
         chain=chain,
     )
     job.run()
+
+    # job = BlockExport(
+    #     start_block=start_block,
+    #     end_block=end_block,
+    #     chain=chain,
+    # )
 
 
 if __name__ == "__main__":
