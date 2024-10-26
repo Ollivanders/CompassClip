@@ -1,39 +1,21 @@
-from ethereumetl.jobs.export_blocks_job import ExportBlocksJob
-from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
-from ethereumetl.utils import rpc_response_batch_to_results
-from blockchainetl.jobs.base_job import BaseJob
 import json
+from urllib import request
 
 
-from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
-from blockchainetl.jobs.base_job import BaseJob
-from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
-from ethereumetl.mappers.block_mapper import EthBlockMapper
-from ethereumetl.mappers.transaction_mapper import EthTransactionMapper
-from ethereumetl.utils import rpc_response_batch_to_results, validate_range
-
-from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
-from blockchainetl.jobs.base_job import BaseJob
 from ethereumetl.json_rpc_requests import generate_get_code_json_rpc
 from ethereumetl.mappers.contract_mapper import EthContractMapper
 
 from ethereumetl.service.eth_contract_service import EthContractService
 from ethereumetl.utils import rpc_response_to_result
 
-from constants import BATCH_SIZE, CONTRACT_ADDRESSES, MAX_WORKERS
+from constants import CONTRACT_ADDRESSES
 
-from blockchainetl.file_utils import smart_open
-from ethereumetl.jobs.export_contracts_job import ExportContractsJob
-from ethereumetl.jobs.exporters.contracts_item_exporter import contracts_item_exporter
-from blockchainetl.logging_utils import logging_basic_config
-from ethereumetl.thread_local_proxy import ThreadLocalProxy
-from ethereumetl.providers.auto import get_provider_from_uri
 from ethereumetl.jobs.exporters.blocks_and_transactions_item_exporter import (
     blocks_and_transactions_item_exporter,
 )
-
+from ethereumetl.jobs.exporters.contracts_item_exporter import contracts_item_exporter
 from export.base import BaseExport
-from utils import get_data_path, get_provider_uri
+from utils import get_data_path
 
 
 class ContractExport(BaseExport):
@@ -44,14 +26,7 @@ class ContractExport(BaseExport):
         chain,
     ):
         super().__init__(start_block, end_block, chain)
-        self.item_exporter = blocks_and_transactions_item_exporter(
-            get_data_path(chain, "blocks"), get_data_path(chain, "transactions")
-        )
-
-        self.item_exporter = blocks_and_transactions_item_exporter(
-            get_data_path(chain, "blocks"), get_data_path(chain, "transactions")
-        )
-
+        self.item_exporter = contracts_item_exporter(get_data_path(chain, "contract"))
         self.contract_service = EthContractService()
         self.contract_mapper = EthContractMapper()
 
@@ -76,9 +51,8 @@ class ContractExport(BaseExport):
             contract = self._get_contract(contract_address, result)
             contracts.append(contract)
 
-        print(contracts)
         for contract in contracts:
-            self.contract_item_exporter.export_item(
+            self.item_exporter.export_item(
                 self.contract_mapper.contract_to_dict(contract)
             )
 
@@ -95,6 +69,8 @@ class ContractExport(BaseExport):
         contract.is_erc721 = self.contract_service.is_erc721_contract(
             function_sighashes
         )
+
+        return contract
 
     def _end(self):
         self.batch_work_executor.shutdown()
