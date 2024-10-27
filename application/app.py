@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_jsonrpc import JSONRPC
 
-from dirs import contract_partition_dir, transaction_partition_dir
+from dirs import block_partition_dir, contract_partition_dir, transaction_partition_dir
 from output.data_functions import contract_equality, contract_partition_key
 from partition_read import PartitionedReader
 
@@ -30,6 +30,14 @@ def get_reader_contract(chain, partition):
     )
 
 
+def get_reader_blocks(chain, partition):
+    return PartitionedReader(
+        block_partition_dir(chain, partition),
+        lambda x: "0",
+        lambda x, y: x["number"] == y["number"],
+    )
+
+
 @jsonrpc.method("eth_getCode")
 def get_code(chain, address: str, blockNumber: str) -> list:
     reader = get_reader_contract(chain, "contract")
@@ -46,6 +54,13 @@ def get_transaction_by_hash(chain, hash: str) -> list:
 def get_block_by_number(chain, number: str) -> list:
     reader = get_reader_transaction(chain, "block")
     return reader.get_records({"block": number})
+
+
+@jsonrpc.method("eth_getBlockTransactionCountByNumber")
+def get_block_transaction_count_by_number(chain, blockNumber: str) -> int:
+    reader = get_reader_blocks(chain, "block")
+    records = reader.get_records({"number": int(blockNumber)})
+    return records[0]["transaction_count"] if len(records) > 0 else 0
 
 
 if __name__ == "__main__":
