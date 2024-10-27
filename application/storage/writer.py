@@ -15,8 +15,8 @@ class PartitionedWriter:
         return False
 
     @staticmethod
-    def append_json(new_data, filename="data.json"):
-        with open(filename, "r+") as file:
+    def append_json(new_data, path: Path):
+        with path.open("r+") as file:
             # First we load existing data into a dict.
             file_data = json.load(file)
 
@@ -44,11 +44,9 @@ class PartitionedWriter:
 
         args:
         filename - source json file to load from
-        destination_folder - destination directory to write partitioned data to
-        partition_key - the name of the partition key in the json objects
-        depth - the number of characters to from the partition key
         """
-        with open(filename, "r") as f:
+        path = Path(filename)
+        with path.open("r") as f:
             records = f.readlines()
 
         for line in records:
@@ -56,18 +54,19 @@ class PartitionedWriter:
             hash = record["hash"]
 
             dest_path = Path(self.destination_folder)
-            dest_filename = dest_path / Path(hash[: self.partition_depth] + ".json")
+            dst_path = dest_path / Path(hash[: self.partition_depth] + ".json")
 
-            if dest_filename.is_file():
-                PartitionedWriter.append_json(record, str(dest_filename))
+            if dst_path.is_file():
+                PartitionedWriter.append_json(record, dst_path)
 
             else:
                 # otherwise create the file
-                with open(dest_filename, "w") as df:
+                with dst_path.open("w") as df:
                     json.dump([record], df)
 
 
 if __name__ == "__main__":
-    write_split(
-        "../sampledata/eth/transactions.json", "../sampledata/eth/partitioned/", "hash"
+    writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash")
+    writer.write_split(
+        "../sampledata/eth/transactions.json",
     )

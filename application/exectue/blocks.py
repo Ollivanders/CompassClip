@@ -6,10 +6,10 @@ from ethereumetl.utils import rpc_response_batch_to_results
 from mapper.block_mapper import BlockMapper
 from mapper.transaction_mapper import TransactionMapper
 
-from export.base import BaseExport
+from execute.base import BaseExecute
 
 
-class BlockExport(BaseExport):
+class BlockExport(BaseExecute):
     def __init__(self, start_block, end_block, chain):
         super().__init__(chain, start_block, end_block)
 

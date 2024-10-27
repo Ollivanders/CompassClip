@@ -1,6 +1,3 @@
-from ethereumetl.domain.contract import EthContract
-
-
 class ContractMapper(object):
     fields = [
         "address",
@@ -28,3 +25,13 @@ class ContractMapper(object):
             "is_erc721": contract.is_erc721,
             "block_number": contract.block_number,
         }
+
+
+class EthContract(object):
+    def __init__(self):
+        self.address = None
+        self.bytecode = None
+        self.function_sighashes = []
+        self.is_erc20 = False
+        self.is_erc721 = False
+        self.block_number = None

@@ -1,5 +1,24 @@
-from ethereumetl.domain.transaction import EthTransaction
-from ethereumetl.utils import hex_to_dec, to_normalized_address
+from mapper.util import hex_to_dec, to_normalized_address
+
+
+class EthTransaction(object):
+    def __init__(self):
+        self.hash = None
+        self.nonce = None
+        self.block_hash = None
+        self.block_number = None
+        self.transaction_index = None
+        self.from_address = None
+        self.to_address = None
+        self.value = None
+        self.gas = None
+        self.gas_price = None
+        self.input = None
+        self.max_fee_per_gas = None
+        self.max_priority_fee_per_gas = None
+        self.transaction_type = None
+        self.max_fee_per_blob_gas = None
+        self.blob_versioned_hashes = []
 
 
 class TransactionMapper(object):
@@ -38,12 +57,13 @@ class TransactionMapper(object):
         transaction.gas = hex_to_dec(json_dict.get("gas"))  # type: ignore
         transaction.gas_price = hex_to_dec(json_dict.get("gasPrice"))  # type: ignore
         transaction.input = json_dict.get("input")
+        transaction.transaction_type = hex_to_dec(json_dict.get("type"))  # type: ignore
+
         transaction.max_fee_per_gas = hex_to_dec(json_dict.get("maxFeePerGas"))  # type: ignore
+        transaction.max_fee_per_blob_gas = hex_to_dec(json_dict.get("maxFeePerBlobGas"))  # type: ignore
         transaction.max_priority_fee_per_gas = hex_to_dec(  # type: ignore
             json_dict.get("maxPriorityFeePerGas")
         )
-        transaction.transaction_type = hex_to_dec(json_dict.get("type"))  # type: ignore
-        transaction.max_fee_per_blob_gas = hex_to_dec(json_dict.get("maxFeePerBlobGas"))  # type: ignore
 
         transaction.access_list = json_dict.get("accessList", [])  # type: ignore
 

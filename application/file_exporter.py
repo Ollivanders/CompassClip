@@ -2,7 +2,7 @@ import logging
 
 from blockchainetl.atomic_counter import AtomicCounter
 
-from export.json_exporter import JsonExport
+from exectue.json_exporter import JsonExport
 from dirs import DATA_DIR
 from mapper.block_mapper import BlockMapper
 from mapper.contract_mapper import ContractMapper
@@ -16,7 +16,7 @@ TYPE_MAPPING = {
 }
 
 
-class ItemExporter:
+class FileExporter:
     def __init__(self, chain):
         self.chain = chain
         self.exporter_mapping = {}

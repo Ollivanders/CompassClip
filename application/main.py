@@ -1,10 +1,10 @@
 import shutil
 from constants import BLOCK_COUNT
-from export.contract import ContractExport
+from execute.contract import ContractExport
 from log_utils import logging_basic_config
 
 from dirs import DATA_DIR
-from export.blocks import BlockExport
+from execute.blocks import BlockExport
 
 logging_basic_config()
 
