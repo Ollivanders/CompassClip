@@ -2,7 +2,7 @@ import logging
 
 from blockchainetl.atomic_counter import AtomicCounter
 
-from exectue.json_exporter import JsonExport
+from execute.json_exporter import JsonExport
 from dirs import DATA_DIR
 from mapper.block_mapper import BlockMapper
 from mapper.contract_mapper import ContractMapper
