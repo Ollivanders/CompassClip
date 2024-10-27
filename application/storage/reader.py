@@ -22,8 +22,8 @@ class PartitionedReader:
 
 
 if __name__ == "__main__":
-    reader = PartitionedReader("../sampledata/eth/partitioned/", "hash", 6)
+    reader = PartitionedReader("../sampledata/eth/partitioned/", "hash", 4)
     records = reader.get_records(
-        "0x2b0da7b682a2a76e143f9d922c87566be499c53055dd832eef5ab4302d4deaa1"
+        "0x74ebd073bb3d30b7544f0b0a2201ffe4f45856943f2e9505b7094848a103067e"
     )
     print(records)
