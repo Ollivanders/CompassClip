@@ -3,7 +3,14 @@ from pathlib import Path
 
 
 class PartitionedWriter:
-    def __init__(self, destination_folder, partition_key, partition_depth=4, dynamic_depth=True, dynamic_depth_limit=20) -> None:
+    def __init__(
+        self,
+        destination_folder,
+        partition_key,
+        partition_depth=4,
+        dynamic_depth=True,
+        dynamic_depth_limit=20,
+    ) -> None:
         self.destination_folder = destination_folder
         self.partition_key = partition_key
         self.partition_depth = partition_depth
@@ -16,7 +23,6 @@ class PartitionedWriter:
             self._read_depth_file()
         self._write_depth_file()
 
-
     def _initialize_target_dir(self):
         Path(self.destination_folder).mkdir(parents=True, exist_ok=True)
 
@@ -26,12 +32,12 @@ class PartitionedWriter:
     def _read_depth_file(self):
         path = self._get_depth_path()
         if path.is_file():
-            with path.open('r') as f:
+            with path.open("r") as f:
                 self.partition_depth = int(f.read())
 
     def _write_depth_file(self):
-        path = self._get_depth_path() 
-        with path.open('w') as f:
+        path = self._get_depth_path()
+        with path.open("w") as f:
             f.write(str(self.partition_depth))
 
     @staticmethod
@@ -50,7 +56,9 @@ class PartitionedWriter:
                     [
                         x
                         for x in file_data
-                        if PartitionedWriter.matches(x, self.partition_key, new_data[self.partition_key])
+                        if PartitionedWriter.matches(
+                            x, self.partition_key, new_data[self.partition_key]
+                        )
                     ]
                 )
                 > 0
@@ -66,9 +74,17 @@ class PartitionedWriter:
 
             if self.dynamic_depth and len(file_data) > self.dynamic_depth_limit:
                 new_depth = self.partition_depth + 1
-                PartitionedWriter.rewrite_partitions(self, PartitionedWriter(self.destination_folder, self.partition_key, new_depth, False, self.dynamic_depth_limit))
+                PartitionedWriter.rewrite_partitions(
+                    self,
+                    PartitionedWriter(
+                        self.destination_folder,
+                        self.partition_key,
+                        new_depth,
+                        False,
+                        self.dynamic_depth_limit,
+                    ),
+                )
                 self.partition_depth = new_depth
-
 
     def write_split(self, record_source):
         """Partition a json source into multiple files based on the partition key
@@ -92,17 +108,21 @@ class PartitionedWriter:
 
     @staticmethod
     def rewrite_partitions(old_writer, new_writer):
-        current_files = Path(old_writer.destination_folder).glob('*.json')
-        
+        current_files = Path(old_writer.destination_folder).glob("*.json")
+
         def iterator(path):
-            with path.open('r') as f:
+            with path.open("r") as f:
+                # try:
                 for record in json.load(f):
                     yield record
+                # except Exception as e:
+                #     print(f.read())
+                #     raise e
 
         for c in current_files:
             new_writer.write_split(iterator(c))
             c.unlink()
-        
+
 
 def read_source(filename):
     path = Path(filename)
@@ -112,14 +132,11 @@ def read_source(filename):
 
 
 if __name__ == "__main__":
-
-    def read_source(filename):
-        path = Path(filename)
-        with path.open("r") as f:
-            for line in f:
-                yield json.loads(line)
-
-    writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", "address", partition_depth=4, dynamic_depth=True, dynamic_depth_limit=20)
-    writer.write_split(
-        read_source("../sampledata/eth/contracts.json")
+    writer = PartitionedWriter(
+        "../sampledata/eth/partitioned-contracts/",
+        "address",
+        partition_depth=4,
+        dynamic_depth=True,
+        dynamic_depth_limit=20,
     )
+    writer.write_split(read_source("../sampledata/eth/contracts.json"))

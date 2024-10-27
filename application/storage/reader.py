@@ -14,9 +14,8 @@ class PartitionedReader:
     def _read_depth_file(self):
         path = self._get_depth_path()
         if path.is_file():
-            with path.open('r') as f:
+            with path.open("r") as f:
                 self.partition_depth = int(f.read())
-
 
     def get_records(self, search_value):
         path = Path(self.archive_location) / Path(
