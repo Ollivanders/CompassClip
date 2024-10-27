@@ -29,7 +29,6 @@ class PartitionedReader:
 
         with path.open("r") as f:
             records = json.load(f)
-            print([r["block_number"] for r in records])
             return [r for r in records if self.matching_function(search_record, r)]
 
 

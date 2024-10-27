@@ -63,6 +63,7 @@ class PartitionedWriter:
                     PartitionedWriter(
                         self.destination_folder,
                         self.partition_function,
+                        self.matching_function,
                         new_depth,
                         False,
                         self.dynamic_depth_limit,
@@ -98,8 +99,14 @@ class PartitionedWriter:
         
         def iterator(path):
             with path.open("r") as f:
-                for record in json.load(f):
-                    yield record
+                try:
+                    for record in json.load(f):
+                        yield record
+                except Exception as e:
+                    with path.open('r') as g:
+                        print(g.readlines())
+                        print(path)
+                        raise e
 
         for c in current_files:
             new_writer.write_split(iterator(c))

@@ -13,6 +13,4 @@ def contract_partition_key(record):
 
 
 def contract_equality(record_a, record_b):
-    print(record_a)
-    print(record_b)
     return record_a["address"] == record_b["address"] and record_a["block_number"] == record_b["block_number"]
