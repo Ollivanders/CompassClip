@@ -11,6 +11,15 @@ Run python3.11 or lower. It is recommended this project is run in venv.
 python3 -m pip install -r requirements.txt
 ```
 
+## Syncing
+The data collection has already ran on a subset of blocks used for the examples below (the last
+10,000). This can be downloaded from s3 using the following command:
+
+`python3 sync.py`
+The shell command here is abstracted into python to ensure no confusion about what dir you should be
+when  the command.
+
+
 ## aims
 
 - How many chains supported? - any that have an rpc client
