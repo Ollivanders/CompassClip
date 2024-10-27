@@ -62,7 +62,7 @@ def get_block_by_number(chain, number: str) -> dict:
 @jsonrpc.method("eth_getBlockTransactionCountByNumber")
 def get_block_transaction_count_by_number(chain, number: str):
     reader = get_reader_transaction(chain, "block")
-    block = reader.get_records({"block": number})
+    block = reader.get_records({"block": number})[0]
     return {
         "used_transaction_count": block.get("used_transaction_count"),
         "transaction_count": block.get("transaction_count"),
