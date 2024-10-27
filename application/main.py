@@ -2,6 +2,7 @@ import json
 import logging
 
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
+<<<<<<< HEAD
 from dirs import (
     contract_file,
     contract_partition_dir,
@@ -9,6 +10,9 @@ from dirs import (
     transaction_partition_dir,
 )
 from execute.blocks import BlockExport
+=======
+from dirs import transaction_file, transaction_partition_dir, contract_file, contract_partition_dir, block_file, block_partition_dir
+>>>>>>> c7a7e8b (feat: implement eth_getBlockTransactionCountByNumber)
 from execute.contract import ContractExport
 from execute.rpc_wrappers import get_latest_block_number
 from log import basic_log
@@ -18,6 +22,12 @@ from output.partition_writer import PartitionedWriter, read_source
 from provider import BatchHTTPProvider
 from thread_proxy import ThreadLocalProxy
 from utils import get_provider_uri, refresh_data_dir
+<<<<<<< HEAD
+=======
+from utils import get_provider_uri
+from output.data_functions import contract_partition_key, contract_equality
+from pathlib import Path
+>>>>>>> c7a7e8b (feat: implement eth_getBlockTransactionCountByNumber)
 
 basic_log()
 
@@ -64,6 +74,28 @@ def init_contract_partition(chain):
     logger.info("Finished contract partition ✅")
 
 
+def init_block_partition(chain):
+    logger.info("Starting block partition")
+
+    destination = block_partition_dir(chain, "block")
+    source = block_file(chain)
+
+    with source.open('r') as f:
+        records = []
+        for line in f.readlines():
+            record = json.loads(line)
+            records.append(record)
+        
+    with (destination / Path("0.json")).open('w') as f:
+        json.dump(records, f)
+
+    depth_path = destination / Path("partition_depth.txt")
+    with depth_path.open('w') as f:
+        f.write("1")
+
+    logger.info("Finished block partition ✅")
+
+
 def chain_export(chain, start_block, end_block):
     jobs = [
         BlockExport(
@@ -82,10 +114,11 @@ def chain_export(chain, start_block, end_block):
 
 
 def main(chain, start_block, end_block):
-    refresh_data_dir()
-    chain_export(chain, start_block, end_block)
-    init_transaction_partition(chain)
-    init_contract_partition(chain)
+    # refresh_data_dir()
+    # chain_export(chain, start_block, end_block)
+    # init_transaction_partition(chain)
+    # init_contract_partition(chain)
+    init_block_partition(chain)
 
 
 if __name__ == "__main__":

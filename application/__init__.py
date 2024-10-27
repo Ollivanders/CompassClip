@@ -1,4 +1,4 @@
-from .dirs import transaction_partition_dir, contract_partition_dir
+from .dirs import transaction_partition_dir, contract_partition_dir, block_partition_dir
 from flask import Flask
 from flask_jsonrpc import JSONRPC
 from .partition_read import PartitionedReader
@@ -25,6 +25,9 @@ def get_reader_contract(chain, partition):
         contract_equality,
     )
 
+def get_reader_blocks(chain, partition):
+    return PartitionedReader(block_partition_dir(chain, partition), lambda x: "0", lambda x, y: x["number"] == y["number"] )
+
 
 chain = "eth"
 
@@ -45,3 +48,9 @@ def get_transaction_by_hash(hash: str) -> list:
 def get_block_by_number(number: str) -> list:
     reader = get_reader_transaction(chain, "block")
     return reader.get_records({"block": number})
+
+@jsonrpc.method("eth_getBlockTransactionCountByNumber")
+def get_block_transaction_count_by_number(blockNumber: str) -> int:
+    reader = get_reader_blocks(chain, "block")
+    records = reader.get_records({"number": int(blockNumber)})
+    return records[0]["transaction_count"] if len(records) > 0 else 0
