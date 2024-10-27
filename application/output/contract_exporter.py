@@ -1,13 +1,7 @@
-from dirs import DATA_DIR
 from output.file_exporter import FileExporter
 
 
 class ContractFileExporter(FileExporter):
-    def get_data_path(self, contract_address: str):
-        data_path = DATA_DIR / self.chain / "contract" / contract_address
-        data_path.parent.mkdir(parents=True, exist_ok=True)
-        return data_path
-
     def export_item(self, item):
         item_type = item.get("type")
         if item_type is None:
@@ -18,7 +12,7 @@ class ContractFileExporter(FileExporter):
         if address is None:
             raise RuntimeError("Contract address cannot be null")
 
-        contract_address_key = f"contract/{address}"
+        contract_address_key = f"contract/address/{address}"
         if contract_address_key not in self.file_mapping:
             self.open_file(contract_address_key)
 

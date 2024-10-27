@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from dirs import transaction_partition_dir
+
 
 class PartitionedReader:
     def __init__(self, archive_location, partition_key) -> None:
@@ -31,7 +33,7 @@ class PartitionedReader:
 
 
 if __name__ == "__main__":
-    reader = PartitionedReader("../sampledata/eth/partitioned/", "hash", 4)
+    reader = PartitionedReader(transaction_partition_dir("eth", "hash"), "hash")
     records = reader.get_records(
         "0x74ebd073bb3d30b7544f0b0a2201ffe4f45856943f2e9505b7094848a103067e"
     )

@@ -1,10 +1,8 @@
+import itertools
 import logging
 
-
-from output.json_export import JsonExport
 from dirs import DATA_DIR
-
-import itertools
+from output.json_export import JsonExport
 
 DATA_TYPES = (
     "block",
@@ -38,8 +36,8 @@ class FileExporter:
         self.logger = logging.getLogger("FileExporter")
         self.open()
 
-    def get_data_path(self, type: str):
-        data_path = DATA_DIR / self.chain / type
+    def get_data_path(self, item_key: str):
+        data_path = DATA_DIR / self.chain / item_key
         data_path.parent.mkdir(parents=True, exist_ok=True)
         return data_path
 

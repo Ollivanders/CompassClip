@@ -2,17 +2,16 @@ import json
 import logging
 import shutil
 
-from storage.writer import PartitionedWriter, read_source
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
-from thread_proxy import ThreadLocalProxy
-from provider import BatchHTTPProvider
-from mapper.util import hex_to_dec
-from execute.rpc_wrappers import get_latest_block_number
-from utils import get_provider_uri
 from dirs import DATA_DIR, transaction_file, transaction_partition_dir
-from execute.blocks import BlockExport
+from execute.contract import ContractExport
+from execute.rpc_wrappers import get_latest_block_number
 from log import basic_log
-
+from mapper.util import hex_to_dec
+from output.partition_writer import PartitionedWriter, read_source
+from provider import BatchHTTPProvider
+from thread_proxy import ThreadLocalProxy
+from utils import get_provider_uri
 
 basic_log()
 
@@ -39,7 +38,6 @@ def get_latest(chain):
 
 def init_transaction_partition(chain):
     logger.info("Starting transaction partition")
-    # partition transactions
     writer = PartitionedWriter(transaction_partition_dir(chain, "hash"), "hash")
     writer.write_split(read_source(transaction_file(chain)))
     logger.info("Finished transaction partition ✅")
@@ -47,16 +45,16 @@ def init_transaction_partition(chain):
 
 def chain_export(chain, start_block, end_block):
     jobs = [
-        BlockExport(
-            chain=chain,
-            start_block=start_block,
-            end_block=end_block,
-        ),
-        # ContractExport(
+        # BlockExport(
         #     chain=chain,
         #     start_block=start_block,
         #     end_block=end_block,
         # ),
+        ContractExport(
+            chain=chain,
+            start_block=start_block,
+            end_block=end_block,
+        ),
     ]
     for job in jobs:
         job.run()

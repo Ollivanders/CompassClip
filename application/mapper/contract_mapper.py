@@ -6,10 +6,10 @@ from typing import List, Optional
 class EthContract:
     address: str
     bytecode: str
+    block_number: int
     function_sighashes: Optional[List[str]] = None
     is_erc20: bool = False
     is_erc721: bool = False
-    block_number: Optional[int] = None
     type: str = "contract"
 
     def __post_init__(self):
@@ -17,8 +17,15 @@ class EthContract:
             self.function_sighashes = []
 
     @classmethod
-    def from_rpc(cls, contract_address: str, rpc_result: str) -> "EthContract":
-        return cls(address=contract_address, bytecode=rpc_result)
+    def from_rpc(
+        cls,
+        contract_address: str,
+        rpc_result: str,
+        block_number: int,
+    ) -> "EthContract":
+        return cls(
+            address=contract_address, bytecode=rpc_result, block_number=block_number
+        )
 
     def to_dict(self) -> dict:
         return asdict(self)

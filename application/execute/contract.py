@@ -1,13 +1,11 @@
 import json
 
+from constants import CONTRACT_ADDRESSES
+from execute.base import BaseExecute
+from execute.rpc_wrappers import generate_get_code_json_rpc
+from execute.util import rpc_response_to_result
 from mapper.contract_mapper import EthContract
 from output.contract_exporter import ContractFileExporter
-from execute.util import rpc_response_to_result
-from execute.rpc_wrappers import generate_get_code_json_rpc
-from constants import CONTRACT_ADDRESSES
-
-
-from execute.base import BaseExecute
 
 
 class ContractExport(BaseExecute):
@@ -38,14 +36,14 @@ class ContractExport(BaseExecute):
                 result = rpc_response_to_result(response)
 
                 contract_address = contract_addresses[request_id]
-                contract = self._get_contract(contract_address, result)
+                contract = self._get_contract(contract_address, result, block_number)
                 contracts.append(contract)
 
             for contract in contracts:
                 self.exporter.export_item(contract.to_dict())
 
-    def _get_contract(self, contract_address, rpc_result):
-        return EthContract.from_rpc(contract_address, rpc_result)
+    def _get_contract(self, contract_address, rpc_result, block_number):
+        return EthContract.from_rpc(contract_address, rpc_result, block_number)
 
     def _end(self):
         self.batch_work_executor.shutdown()

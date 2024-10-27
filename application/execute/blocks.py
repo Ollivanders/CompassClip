@@ -1,12 +1,11 @@
 import json
 
-from mapper.block_mapper import EthBlock
+from constants import CONTRACT_ADDRESSES_SET
+from execute.base import BaseExecute
 from execute.rpc_wrappers import generate_get_block_by_number_json_rpc
 from execute.util import rpc_response_batch_to_results
+from mapper.block_mapper import EthBlock
 from output.file_exporter import FileExporter
-from constants import CONTRACT_ADDRESSES_SET
-
-from execute.base import BaseExecute
 
 
 class BlockExport(BaseExecute):

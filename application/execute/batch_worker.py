@@ -1,14 +1,14 @@
 import logging
 import time
 
-from requests.exceptions import Timeout as RequestsTimeout, HTTPError, TooManyRedirects
-from web3._utils.threads import Timeout as Web3Timeout
-
 from ethereumetl.executors.bounded_executor import BoundedExecutor
 from ethereumetl.executors.fail_safe_executor import FailSafeExecutor
 from ethereumetl.misc.retriable_value_error import RetriableValueError
 from ethereumetl.progress_logger import ProgressLogger
 from ethereumetl.utils import dynamic_batch_iterator
+from requests.exceptions import HTTPError, TooManyRedirects
+from requests.exceptions import Timeout as RequestsTimeout
+from web3._utils.threads import Timeout as Web3Timeout
 
 RETRY_EXCEPTIONS = (
     ConnectionError,
