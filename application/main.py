@@ -2,6 +2,7 @@ import json
 import logging
 import shutil
 
+from execute.blocks import BlockExport
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
 from dirs import DATA_DIR, transaction_file, transaction_partition_dir
 from execute.contract import ContractExport
@@ -45,11 +46,11 @@ def init_transaction_partition(chain):
 
 def chain_export(chain, start_block, end_block):
     jobs = [
-        # BlockExport(
-        #     chain=chain,
-        #     start_block=start_block,
-        #     end_block=end_block,
-        # ),
+        BlockExport(
+            chain=chain,
+            start_block=start_block,
+            end_block=end_block,
+        ),
         ContractExport(
             chain=chain,
             start_block=start_block,
