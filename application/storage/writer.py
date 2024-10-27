@@ -39,8 +39,6 @@ class PartitionedWriter:
             # convert back to json.
             json.dump(file_data, file)
 
-
-
     def write_split(self, record_source):
         """Partition a json file into multiple files based on the partition key
 
@@ -48,15 +46,13 @@ class PartitionedWriter:
         filename - source json file to load from
         """
         for record in record_source:
-        
             hash = record["hash"]
 
             dest_path = Path(self.destination_folder)
-            dst_path = dest_path / Path(hash[: self.partition_depth] + ".json")
+            dst_path: Path = dest_path / Path(hash[: self.partition_depth] + ".json")
 
             if dst_path.is_file():
                 PartitionedWriter.append_json(record, dst_path)
-
             else:
                 # otherwise create the file
                 with dst_path.open("w") as df:
@@ -65,15 +61,13 @@ class PartitionedWriter:
     # def rewrite_partitions(self, depth=4):
 
 
+def read_source(filename):
+    path = Path(filename)
+    with path.open("r") as f:
+        for line in f:
+            yield json.loads(line)
+
+
 if __name__ == "__main__":
-
-    def read_source(filename):
-        path = Path(filename)
-        with path.open("r") as f:
-            for line in f:
-                yield json.loads(line)
-
     writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash")
-    writer.write_split(
-        read_source("../sampledata/eth/transactions.json")
-    )
+    writer.write_split(read_source("../sampledata/eth/transactions.json"))

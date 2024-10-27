@@ -1,19 +1,23 @@
 import json
+import logging
 import shutil
 
+from storage.writer import PartitionedWriter, read_source
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
 from thread_proxy import ThreadLocalProxy
 from provider import BatchHTTPProvider
 from mapper.util import hex_to_dec
 from execute.rpc_wrappers import get_latest_block_number
 from utils import get_provider_uri
-from dirs import DATA_DIR
+from dirs import DATA_DIR, transaction_file, transaction_partition_dir
 from execute.blocks import BlockExport
 from execute.contract import ContractExport
 from log import basic_log
 
 
 basic_log()
+
+logger = logging.getLogger("Main")
 
 
 def refresh_data_dir():
@@ -34,8 +38,15 @@ def get_latest(chain):
     return number
 
 
-def main(chain, start_block, end_block):
-    refresh_data_dir()
+def init_transaction_partition(chain):
+    logger.info("Starting transaction partition")
+    # partition transactions
+    writer = PartitionedWriter(transaction_partition_dir(chain, "hash"), "hash")
+    writer.write_split(read_source(transaction_file(chain)))
+    logger.info("Finished transaction partition ✅")
+
+
+def chain_export(chain, start_block, end_block):
     jobs = [
         BlockExport(
             chain=chain,
@@ -50,6 +61,12 @@ def main(chain, start_block, end_block):
     ]
     for job in jobs:
         job.run()
+
+
+def main(chain, start_block, end_block):
+    refresh_data_dir()
+    chain_export(chain, start_block, end_block)
+    init_transaction_partition(chain)
 
 
 if __name__ == "__main__":
