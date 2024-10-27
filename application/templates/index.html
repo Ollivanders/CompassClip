@@ -38,6 +38,13 @@
         <pre id="responseBlock"></pre>
     </div>
 
+    <div>
+        <h2>Get Block Transaction Amount by Number</h2>
+        <input type="text" id="blockTransactionAmountNumberInput" placeholder="Block Number">
+        <button onclick="getNumTransactByBlock()">Get Number of Transactions in Block</button>
+        <pre id="responseNumTransactBlock"></pre>
+    </div>
+
     <script>
         async function callJsonRpc(method, params) {
             const response = await fetch('/api', {
@@ -75,6 +82,13 @@
             const blockNumber = document.getElementById('blockNumberInput').value;
             const result = await callJsonRpc("eth_getBlockByNumber", [chain, blockNumber]);
             document.getElementById('responseBlock').innerText = JSON.stringify(result, null, 2);
+        }
+
+        async function getNumTransactByBlock() {
+            const chain = document.getElementById('chainInput').value;
+            const blockNumber = document.getElementById('blockTransactionAmountNumberInput').value;
+            const result = await callJsonRpc("eth_getBlockTransactionCountByNumber", [chain, blockNumber]);
+            document.getElementById('responseNumTransactBlock').innerText = JSON.stringify(result, null, 2);
         }
     </script>
 </body>

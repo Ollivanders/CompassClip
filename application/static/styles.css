@@ -25,7 +25,7 @@ pre {
 
 
 body {
-	background: linear-gradient(-45deg, #e8b6a6, #dc749c, #83b8cb, #7fcebc);
+	background: linear-gradient(-45deg, #e5bfb3, #dc90ad, #99bfcd, #9acdc1);
 	background-size: 400% 400%;
 	animation: gradient 15s ease infinite;
 	height: 100vh;
