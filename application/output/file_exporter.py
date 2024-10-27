@@ -37,7 +37,7 @@ class FileExporter:
 
         self.file_mapping = {}
 
-        self.logger = logging.getLogger("ItemExporter")
+        self.logger = logging.getLogger("FileExporter")
         self.open()
 
     def get_data_path(self, type: str):

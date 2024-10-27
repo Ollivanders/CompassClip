@@ -44,10 +44,16 @@ def generate_get_code_json_rpc(contract_addresses, block):
         )
 
 
-def generate_json_rpc(method, params, request_id=1):
-    return {
+def get_latest_block_number():
+    return generate_json_rpc(method="eth_blockNumber")
+
+
+def generate_json_rpc(method, params={}, request_id=1):
+    rpc = {
         "jsonrpc": "2.0",
         "method": method,
-        "params": params,
         "id": request_id,
     }
+    if params:
+        rpc["params"] = params
+    return rpc
