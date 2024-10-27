@@ -5,6 +5,8 @@ from utils import refresh_data_dir
 
 BUCKET_NAME = "compassclips"
 
+print(DATA_DIR)
+
 
 def sync_local_to_s3():
     """Sync local directory to S3."""

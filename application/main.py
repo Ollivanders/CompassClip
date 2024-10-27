@@ -21,7 +21,7 @@ from output.data_functions import contract_equality, contract_partition_key
 from output.partition_writer import PartitionedWriter, read_source
 from provider import BatchHTTPProvider
 from thread_proxy import ThreadLocalProxy
-from utils import get_provider_uri
+from utils import get_provider_uri, refresh_data_dir
 
 basic_log()
 
@@ -113,10 +113,10 @@ def chain_export(chain, start_block, end_block):
 
 
 def main(chain, start_block, end_block):
-    # refresh_data_dir()
-    # chain_export(chain, start_block, end_block)
-    # init_transaction_partition(chain)
-    # init_contract_partition(chain)
+    refresh_data_dir()
+    chain_export(chain, start_block, end_block)
+    init_transaction_partition(chain)
+    init_contract_partition(chain)
     init_block_partition(chain)
 
 
