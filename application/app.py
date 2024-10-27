@@ -41,19 +41,22 @@ def get_reader_blocks(chain, partition):
 @jsonrpc.method("eth_getCode")
 def get_code(chain, address: str, blockNumber: str) -> list:
     reader = get_reader_contract(chain, "contract")
-    return reader.get_records({"address": address, "block_number": int(blockNumber)})
+    records = reader.get_records({"address": address, "block_number": int(blockNumber)})
+    return records[0] if len(records) > 0 else None
 
 
 @jsonrpc.method("eth_getTransactionByHash")
-def get_transaction_by_hash(chain, hash: str) -> list:
+def get_transaction_by_hash(chain, hash: str) -> dict:
     reader = get_reader_transaction(chain, "hash")
-    return reader.get_records({"hash": hash})
+    records = reader.get_records({"hash": hash})
+    return records[0] if len(records) > 0 else None
 
 
 @jsonrpc.method("eth_getBlockByNumber")
-def get_block_by_number(chain, number: str) -> list:
+def get_block_by_number(chain, number: str) -> dict:
     reader = get_reader_blocks(chain, "block")
-    return reader.get_records({"number": int(number)})
+    records = reader.get_records({"number": int(number)})
+    return records[0] if len(records) > 0 else None
 
 
 @jsonrpc.method("eth_getBlockTransactionCountByNumber")
