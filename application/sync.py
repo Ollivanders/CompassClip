@@ -5,7 +5,7 @@ import boto3
 from utils import refresh_data_dir
 from dirs import DATA_DIR
 
-BUCKET_NAME = "compassclip"
+BUCKET_NAME = "compassclips"
 
 
 def sync_local_to_s3():
@@ -78,12 +78,8 @@ def download_from_s3():
 
 refresh_data_dir()
 
-print("Starting download from S3 bucket to local directory...")
-download_from_s3()
-print("Download complete.")
-
 # print("Starting sync from local to S3...")
 # sync_local_to_s3(DATA_DIR, BUCKET_NAME)
 
-# print("Starting sync from S3 to local...")
-# sync_s3_to_local()
+print("Starting sync from S3 to local...")
+sync_s3_to_local()

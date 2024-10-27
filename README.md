@@ -17,12 +17,9 @@ The data collection has already ran on a subset of blocks used for the examples 
 
 `python3 application/sync.py`
 The shell command here is abstracted into python to ensure no confusion about what dir you should be
-when the command.
+when the command. You will need the `aws-cli` installed locally to utilise the parallelisation of the download.
 
-There are a few options in here:
 
-* download_from_s3 - uses boto3 to download each file (not parallelised yet)
-* sync_s3_to_local - requires the awscli to run. Pre-built aws tool for this process
 
 ## Running
 
