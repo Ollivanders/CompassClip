@@ -1,12 +1,11 @@
 import json
 
+from mapper.contract_mapper import EthContract
 from output.contract_exporter import ContractFileExporter
 from execute.util import rpc_response_to_result
 from execute.rpc_wrappers import generate_get_code_json_rpc
 from constants import CONTRACT_ADDRESSES
 
-# from ethereumetl.service.eth_contract_service import EthContractService
-from mapper.contract_mapper import ContractMapper
 
 from execute.base import BaseExecute
 
@@ -16,7 +15,6 @@ class ContractExport(BaseExecute):
         super().__init__(chain, start_block, end_block)
 
         # self.contract_service = EthContractService()
-        self.contract_mapper = ContractMapper()
         self.exporter = ContractFileExporter(self.chain)
 
     def _export(self):
@@ -44,23 +42,10 @@ class ContractExport(BaseExecute):
                 contracts.append(contract)
 
             for contract in contracts:
-                self.exporter.export_item(self.contract_mapper.to_dict(contract))
+                self.exporter.export_item(contract.to_dict())
 
     def _get_contract(self, contract_address, rpc_result):
-        contract = self.contract_mapper.rpc_result_to_contract(
-            contract_address,
-            rpc_result,
-        )
-        # bytecode = contract.bytecode
-        # function_sighashes = self.contract_service.get_function_sighashes(bytecode)
-
-        # contract.function_sighashes = function_sighashes
-        # contract.is_erc20 = self.contract_service.is_erc20_contract(function_sighashes)
-        # contract.is_erc721 = self.contract_service.is_erc721_contract(
-        #     function_sighashes
-        # )
-
-        return contract
+        return EthContract.from_rpc(contract_address, rpc_result)
 
     def _end(self):
         self.batch_work_executor.shutdown()

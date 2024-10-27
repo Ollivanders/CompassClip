@@ -5,24 +5,24 @@ from mapper.util import hex_to_dec, to_normalized_address
 
 @dataclass
 class EthTx:
-    hash: str
-    nonce: int
-    block_hash: str
-    block_number: int
-    block_timestamp: int
-    transaction_index: int
-    from_address: str
-    to_address: str
-    value: int
-    gas: int
-    gas_price: int
-    input: str
-    max_fee_per_gas: int
-    max_priority_fee_per_gas: int
-    transaction_type: int
-    max_fee_per_blob_gas: int
-    blob_versioned_hashes: List[str] = None
-    access_list: List[Any] = None
+    hash: str | None = None
+    nonce: int | None = None
+    block_hash: str | None = None
+    block_number: int | None = None
+    block_timestamp: int | None = None
+    transaction_index: int | None = None
+    from_address: str | None = None
+    to_address: str | None = None
+    value: int | None = None
+    gas: int | None = None
+    gas_price: int | None = None
+    input: str | None = None
+    max_fee_per_gas: int | None = None
+    max_priority_fee_per_gas: int | None = None
+    transaction_type: int | None = None
+    max_fee_per_blob_gas: int | None = None
+    blob_versioned_hashes: List[str] = []
+    access_list: List[Any] = []
 
     type: str = "transaction"
 

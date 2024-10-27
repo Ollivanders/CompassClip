@@ -1,11 +1,10 @@
 import json
 
+from mapper.block_mapper import EthBlock
 from execute.rpc_wrappers import generate_get_block_by_number_json_rpc
 from execute.util import rpc_response_batch_to_results
 from output.file_exporter import FileExporter
 from constants import CONTRACT_ADDRESSES_SET
-from mapper.block_mapper import BlockMapper
-from mapper.transaction_mapper import TransactionMapper
 
 from execute.base import BaseExecute
 
@@ -14,8 +13,6 @@ class BlockExport(BaseExecute):
     def __init__(self, chain, start_block, end_block):
         super().__init__(chain, start_block, end_block)
 
-        self.block_mapper = BlockMapper()
-        self.transaction_mapper = TransactionMapper()
         self.exporter = FileExporter(self.chain, ["block", "transaction"])
 
     def _export(self):
@@ -35,9 +32,9 @@ class BlockExport(BaseExecute):
         response = self.batch_web3_provider.make_batch_request(json.dumps(blocks_rpc))
 
         results = rpc_response_batch_to_results(response)
-        blocks = [self.block_mapper.json_dict_to_block(result) for result in results]
 
-        for block in blocks:
+        for result in results:
+            block = EthBlock.from_json(result)
             self._export_block(block)
 
     def _is_contract_in_access_list(self, access_list):
@@ -47,7 +44,7 @@ class BlockExport(BaseExecute):
         return False
 
     def _export_block(self, block):
-        self.exporter.export_item(self.block_mapper.to_dict(block))
+        self.exporter.export_item(block.to_dict())
 
         for tx in block.transactions:
             if (

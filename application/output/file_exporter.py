@@ -3,17 +3,14 @@ import logging
 
 from output.json_export import JsonExport
 from dirs import DATA_DIR
-from mapper.block_mapper import BlockMapper
-from mapper.contract_mapper import ContractMapper
-from mapper.transaction_mapper import TransactionMapper
 
 import itertools
 
-TYPE_MAPPING = {
-    "block": BlockMapper,
-    "transaction": TransactionMapper,
-    "contract": ContractMapper,
-}
+DATA_TYPES = (
+    "block",
+    "transaction",
+    "contract",
+)
 
 
 class AtomicCounter:
@@ -29,7 +26,7 @@ class AtomicCounter:
 class FileExporter:
     def __init__(self, chain, data_types=[]):
         for data_type in data_types:
-            assert data_type in TYPE_MAPPING.keys()
+            assert data_type in DATA_TYPES
         self.data_types = data_types
 
         self.chain = chain
