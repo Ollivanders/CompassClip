@@ -15,9 +15,9 @@ python3 -m pip install -r requirements.txt
 The data collection has already ran on a subset of blocks used for the examples below (the last
 10,000). This can be downloaded from s3 using the following command:
 
-`python3 sync.py`
+`python3 application/sync.py`
 The shell command here is abstracted into python to ensure no confusion about what dir you should be
-when  the command.
+when the command.
 
 ## Running
 

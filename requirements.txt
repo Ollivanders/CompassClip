@@ -1,3 +1,4 @@
 ethereum-etl
 flask
 Flask-JSONRPC
+aws

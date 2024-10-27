@@ -1,10 +1,9 @@
 import json
 import logging
-import shutil
 
 from execute.blocks import BlockExport
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
-from dirs import DATA_DIR, transaction_file, transaction_partition_dir
+from dirs import transaction_file, transaction_partition_dir
 from execute.contract import ContractExport
 from execute.rpc_wrappers import get_latest_block_number
 from log import basic_log
@@ -12,17 +11,11 @@ from mapper.util import hex_to_dec
 from output.partition_writer import PartitionedWriter, read_source
 from provider import BatchHTTPProvider
 from thread_proxy import ThreadLocalProxy
-from utils import get_provider_uri
+from utils import get_provider_uri, refresh_data_dir
 
 basic_log()
 
 logger = logging.getLogger("Main")
-
-
-def refresh_data_dir():
-    if DATA_DIR.exists():
-        shutil.rmtree(DATA_DIR)
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_latest(chain):
