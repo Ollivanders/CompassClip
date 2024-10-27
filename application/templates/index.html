@@ -45,6 +45,13 @@
         <pre id="responseNumTransactBlock"></pre>
     </div>
 
+    <div class="area">
+        <h2>Get Block By Hash</h2>
+        <input type="text" id="blockHashInput" placeholder="Block Hash">
+        <button onclick="getBlockHash()">Get Block</button>
+        <pre id="responseBlockHash"></pre>
+    </div>
+
     <script>
         async function callJsonRpc(method, params) {
             const response = await fetch('/api', {
@@ -82,6 +89,13 @@
             const blockNumber = document.getElementById('blockNumberInput').value;
             const result = await callJsonRpc("eth_getBlockByNumber", [chain, blockNumber]);
             document.getElementById('responseBlock').innerText = JSON.stringify(result, null, 2);
+        }
+
+        async function getBlockHash() {
+            const chain = document.getElementById('chainInput').value;
+            const blockNumber = document.getElementById('blockHashInput').value;
+            const result = await callJsonRpc("eth_getBlockByHash", [chain, blockNumber]);
+            document.getElementById('responseBlockHash').innerText = JSON.stringify(result, null, 2);
         }
 
         async function getNumTransactByBlock() {

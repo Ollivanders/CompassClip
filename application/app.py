@@ -38,6 +38,14 @@ def get_reader_blocks(chain, partition):
     )
 
 
+def get_reader_blocks_hash(chain, partition):
+    return PartitionedReader(
+        block_partition_dir(chain, partition),
+        lambda x: "0",
+        lambda x, y: x["hash"] == y["hash"],
+    )
+
+
 @jsonrpc.method("eth_getCode")
 def get_code(chain, address: str, blockNumber: str) -> list:
     reader = get_reader_contract(chain, "contract")
@@ -56,6 +64,12 @@ def get_transaction_by_hash(chain, hash: str) -> dict:
 def get_block_by_number(chain, number: str) -> dict:
     reader = get_reader_blocks(chain, "block")
     records = reader.get_records({"number": int(number)})
+    return records[0] if len(records) > 0 else None
+
+@jsonrpc.method("eth_getBlockByHash")
+def get_block_by_hash(chain, hash: str) -> dict:
+    reader = get_reader_blocks_hash(chain, "block")
+    records = reader.get_records({"hash": hash})
     return records[0] if len(records) > 0 else None
 
 
