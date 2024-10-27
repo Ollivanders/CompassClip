@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
+from thread_proxy import ThreadLocalProxy
 from output.file_exporter import FileExporter
 from constants import BATCH_SIZE, MAX_WORKERS
 from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
 from ethereumetl.providers.auto import get_provider_from_uri
-from ethereumetl.thread_local_proxy import ThreadLocalProxy
 from ethereumetl.utils import validate_range
 from utils import get_provider_uri
 

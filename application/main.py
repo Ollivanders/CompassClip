@@ -2,6 +2,8 @@ import json
 import shutil
 
 from constants import BLOCK_COUNT
+from thread_proxy import ThreadLocalProxy
+from provider import BatchHTTPProvider
 from mapper.util import hex_to_dec
 from execute.rpc_wrappers import get_latest_block_number
 from utils import get_provider_uri
@@ -10,10 +12,9 @@ from execute.blocks import BlockExport
 from execute.contract import ContractExport
 from log import basic_log
 
-from ethereumetl.providers.auto import get_provider_from_uri
-from ethereumetl.thread_local_proxy import ThreadLocalProxy
 
 basic_log()
+DEFAULT_TIMEOUT = 60
 
 
 def refresh_data_dir():
@@ -24,7 +25,9 @@ def refresh_data_dir():
 
 def get_latest(chain):
     uri = get_provider_uri(chain)
-    provider = ThreadLocalProxy(lambda: get_provider_from_uri(uri, batch=True))
+    provider = ThreadLocalProxy(
+        lambda: BatchHTTPProvider(uri, request_kwargs={"timeout": DEFAULT_TIMEOUT})
+    )
     response = provider.make_batch_request(json.dumps(get_latest_block_number()))
     number = hex_to_dec(response["result"])
     if number is None:
@@ -52,6 +55,7 @@ def main(chain, start_block, end_block):
 
 if __name__ == "__main__":
     latest = get_latest("eth")
+    print(latest)
     main("eth", latest - BLOCK_COUNT, latest)
 
     # interesting
