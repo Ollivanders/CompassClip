@@ -39,32 +39,41 @@ class PartitionedWriter:
             # convert back to json.
             json.dump(file_data, file)
 
-    def write_split(self, filename):
+
+
+    def write_split(self, record_source):
         """Partition a json file into multiple files based on the partition key
 
         args:
         filename - source json file to load from
         """
-        path = Path(filename)
-        with path.open("r") as f:
-            for line in f:
-                record = json.loads(line)
-                hash = record["hash"]
+        for record in record_source:
+        
+            hash = record["hash"]
 
-                dest_path = Path(self.destination_folder)
-                dst_path = dest_path / Path(hash[: self.partition_depth] + ".json")
+            dest_path = Path(self.destination_folder)
+            dst_path = dest_path / Path(hash[: self.partition_depth] + ".json")
 
-                if dst_path.is_file():
-                    PartitionedWriter.append_json(record, dst_path)
+            if dst_path.is_file():
+                PartitionedWriter.append_json(record, dst_path)
 
-                else:
-                    # otherwise create the file
-                    with dst_path.open("w") as df:
-                        json.dump([record], df)
+            else:
+                # otherwise create the file
+                with dst_path.open("w") as df:
+                    json.dump([record], df)
+
+    # def rewrite_partitions(self, depth=4):
 
 
 if __name__ == "__main__":
+
+    def read_source(filename):
+        path = Path(filename)
+        with path.open("r") as f:
+            for line in f:
+                yield json.loads(line)
+
     writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash")
     writer.write_split(
-        "../sampledata/eth/transactions.json",
+        read_source("../sampledata/eth/transactions.json")
     )
