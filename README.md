@@ -26,6 +26,8 @@ pip install ethereum-etl
 - `eth_getStorageAt`
 - `eth_getTransaction`
 
+https://docs.alchemy.com/reference/eth-gettransactionbyhash
+
 ## Feature Improvements 
 
 * As discussed below, use an Erigon node directly to hit the database directly and ignore the

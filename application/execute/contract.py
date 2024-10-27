@@ -1,19 +1,22 @@
 import json
 
+from file_exporter import FileExporter
 from constants import CONTRACT_ADDRESSES
 from ethereumetl.json_rpc_requests import generate_get_code_json_rpc
 from ethereumetl.service.eth_contract_service import EthContractService
 from ethereumetl.utils import rpc_response_to_result
 from mapper.contract_mapper import ContractMapper
 
-from execute.base import Baseexecute
+from execute.base import BaseExecute
 
 
-class ContractExport(Baseexecute):
+class ContractExport(BaseExecute):
     def __init__(self, chain, start_block, end_block):
         super().__init__(chain, start_block, end_block)
+
         self.contract_service = EthContractService()
         self.contract_mapper = ContractMapper()
+        self.exporter = FileExporter(self.chain, ["contract"])
 
     def _export(self):
         self.batch_work_executor.execute(
@@ -40,7 +43,7 @@ class ContractExport(Baseexecute):
                 contracts.append(contract)
 
             for contract in contracts:
-                self.item_exporter.export_item(self.contract_mapper.to_dict(contract))
+                self.exporter.export_item(self.contract_mapper.to_dict(contract))
 
     def _get_contract(self, contract_address, rpc_result):
         contract = self.contract_mapper.rpc_result_to_contract(
@@ -60,4 +63,3 @@ class ContractExport(Baseexecute):
 
     def _end(self):
         self.batch_work_executor.shutdown()
-        self.item_exporter.close()

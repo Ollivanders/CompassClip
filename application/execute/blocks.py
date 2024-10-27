@@ -1,20 +1,22 @@
 import json
 
+from file_exporter import FileExporter
 from constants import CONTRACT_ADDRESSES_SET
 from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
 from ethereumetl.utils import rpc_response_batch_to_results
 from mapper.block_mapper import BlockMapper
 from mapper.transaction_mapper import TransactionMapper
 
-from execute.base import Baseexecute
+from execute.base import BaseExecute
 
 
-class BlockExport(Baseexecute):
-    def __init__(self, start_block, end_block, chain):
+class BlockExport(BaseExecute):
+    def __init__(self, chain, start_block, end_block):
         super().__init__(chain, start_block, end_block)
 
         self.block_mapper = BlockMapper()
         self.transaction_mapper = TransactionMapper()
+        self.exporter = FileExporter(self.chain, ["block", "transaction"])
 
     def _export(self):
         self.batch_work_executor.execute(
@@ -46,17 +48,15 @@ class BlockExport(Baseexecute):
         return False
 
     def _export_block(self, block):
-        if self.export_blocks:
-            self.item_exporter.export_item(self.block_mapper.to_dict(block))
+        self.exporter.export_item(self.block_mapper.to_dict(block))
 
-        if self.export_transactions:
-            for tx in block.transactions:
-                tx_mapper = self.transaction_mapper.to_dict(tx)
+        for tx in block.transactions:
+            tx_mapper = self.transaction_mapper.to_dict(tx)
 
-                if (
-                    tx_mapper["from_address"] in CONTRACT_ADDRESSES_SET
-                    or tx_mapper["to_address"] in CONTRACT_ADDRESSES_SET
-                ):
-                    self.item_exporter.export_item(tx_mapper)
-                elif self._is_contract_in_access_list(tx_mapper["access_list"]):
-                    self.item_exporter.export_item(tx_mapper)
+            if (
+                tx_mapper["from_address"] in CONTRACT_ADDRESSES_SET
+                or tx_mapper["to_address"] in CONTRACT_ADDRESSES_SET
+            ):
+                self.exporter.export_item(tx_mapper)
+            elif self._is_contract_in_access_list(tx_mapper["access_list"]):
+                self.exporter.export_item(tx_mapper)

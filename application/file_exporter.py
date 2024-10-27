@@ -17,7 +17,11 @@ TYPE_MAPPING = {
 
 
 class FileExporter:
-    def __init__(self, chain):
+    def __init__(self, chain, data_types=[]):
+        for data_type in data_types:
+            assert data_type in TYPE_MAPPING.keys()
+        self.data_types = data_types
+
         self.chain = chain
         self.exporter_mapping = {}
         self.counter_mapping = {}
@@ -25,6 +29,7 @@ class FileExporter:
         self.file_mapping = {}
 
         self.logger = logging.getLogger("ItemExporter")
+        self.open()
 
     def get_data_path(self, type: str):
         data_path = DATA_DIR / self.chain / f"{type}.json"
@@ -32,11 +37,11 @@ class FileExporter:
         return data_path
 
     def open(self):
-        for item_type in TYPE_MAPPING.keys():
+        for item_type in self.data_types:
             filepath = self.get_data_path(item_type)
             file = open(filepath, "wb")
-            self.file_mapping[item_type] = file
 
+            self.file_mapping[item_type] = file
             self.exporter_mapping[item_type] = JsonExport(file)
             self.counter_mapping[item_type] = AtomicCounter()
 
