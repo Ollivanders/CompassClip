@@ -54,7 +54,7 @@ class PartitionedWriter:
             hash = record["hash"]
 
             dest_path = Path(self.destination_folder)
-            dst_path = dest_path / Path(hash[: self.partition_depth] + ".json")
+            dst_path = dest_path / Path(hash[: self.partition_depth])
 
             if dst_path.is_file():
                 PartitionedWriter.append_json(record, dst_path)
@@ -68,5 +68,5 @@ class PartitionedWriter:
 if __name__ == "__main__":
     writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash")
     writer.write_split(
-        "../sampledata/eth/transactions.json",
+        "../sampledata/eth/transactions",
     )

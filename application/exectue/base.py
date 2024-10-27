@@ -38,7 +38,8 @@ class BaseExecute(ABC):
     def _start(self):
         self.item_exporter.open()
 
-    def _export(self): ...
+    def _export(self):
+        ...
 
     def _end(self):
         self.batch_work_executor.shutdown()

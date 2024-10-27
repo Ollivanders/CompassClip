@@ -1,8 +1,8 @@
 import json
 
+from execute.rpc_wrappers import generate_get_code_json_rpc
 from output.file_exporter import FileExporter
 from constants import CONTRACT_ADDRESSES
-from ethereumetl.json_rpc_requests import generate_get_code_json_rpc
 from ethereumetl.service.eth_contract_service import EthContractService
 from ethereumetl.utils import rpc_response_to_result
 from mapper.contract_mapper import ContractMapper

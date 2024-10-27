@@ -41,7 +41,7 @@ class FileExporter:
         self.open()
 
     def get_data_path(self, type: str):
-        data_path = DATA_DIR / self.chain / f"{type}.json"
+        data_path = DATA_DIR / self.chain / type
         data_path.parent.mkdir(parents=True, exist_ok=True)
         return data_path
 

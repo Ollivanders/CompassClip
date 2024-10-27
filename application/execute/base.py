@@ -36,7 +36,8 @@ class BaseExecute(ABC):
             self._end()
 
     @abstractmethod
-    def _export(self): ...
+    def _export(self):
+        ...
 
     def _end(self):
         self.batch_work_executor.shutdown()
