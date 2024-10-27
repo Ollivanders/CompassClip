@@ -16,7 +16,7 @@
     </div>
 
 
-    <div>
+    <div class="area">
         <h2>Get Contract Code</h2>
         <input type="text" id="contractAddress" placeholder="Contract Address">
         <input type="text" id="blockNumber" placeholder="Block Number">
@@ -24,21 +24,21 @@
         <pre id="responseCode"></pre>
     </div>
 
-    <div>
+    <div class="area">
         <h2>Get Transaction By Hash</h2>
         <input type="text" id="txHash" placeholder="Transaction Hash">
         <button onclick="getTransaction()">Get Transaction</button>
         <pre id="responseTx"></pre>
     </div>
 
-    <div>
+    <div class="area">
         <h2>Get Block By Number</h2>
         <input type="text" id="blockNumberInput" placeholder="Block Number">
         <button onclick="getBlock()">Get Block</button>
         <pre id="responseBlock"></pre>
     </div>
 
-    <div>
+    <div class="area">
         <h2>Get Block Transaction Amount by Number</h2>
         <input type="text" id="blockTransactionAmountNumberInput" placeholder="Block Number">
         <button onclick="getNumTransactByBlock()">Get Number of Transactions in Block</button>
