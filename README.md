@@ -41,6 +41,10 @@ Start the flask server by running
 ```bash
 python3 application/app.py
 ```
+
+Remote hosted version
+http://35.179.186.61:5000
+
 Then visit http://127.0.0.1:5000 for some examples as a frontend.
 
 ![frontend](docs/frontend.jpg)
