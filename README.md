@@ -19,9 +19,14 @@ The data collection has already ran on a subset of blocks used for the examples 
 The shell command here is abstracted into python to ensure no confusion about what dir you should be
 when the command.
 
+There are a few options in here:
+
+* download_from_s3 - uses boto3 to download each file (not parallelised yet)
+* sync_s3_to_local - requires the awscli to run. Pre-built aws tool for this process
+
 ## Running
 
-Start the flask server by running 
+Start the flask server by running
 ```bash
 flask --app application run
 ```
