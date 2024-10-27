@@ -19,6 +19,22 @@ The data collection has already ran on a subset of blocks used for the examples 
 The shell command here is abstracted into python to ensure no confusion about what dir you should be
 when  the command.
 
+## Running
+
+Start the flask server by running 
+```bash
+flask --app application run
+```
+
+Query the api by hitting the json rpc endpoint with the following
+```bash
+curl -i -X POST    -H "Content-Type: application/json; indent=4"    -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getCode",
+    "params": {"address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "blockNumber": "21054566"},
+    "id": "1"
+}' http://localhost:5000/api
+```
 
 ## aims
 

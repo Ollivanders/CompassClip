@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
 import logging
-
+import hashlib
 
 class PartitionedWriter:
-    def __init__(self, destination_folder, partition_key, partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128) -> None:
+    def __init__(self, destination_folder, partition_function, matching_function, partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128) -> None:
         self.destination_folder = destination_folder
-        self.partition_key = partition_key
+        self.partition_function = partition_function
+        self.matching_function = matching_function
         self.partition_depth = partition_depth
         self.dynamic_depth = dynamic_depth
         self.dynamic_depth_limit = dynamic_depth_limit
@@ -40,29 +41,12 @@ class PartitionedWriter:
             logging.debug(f"Writing parition depth for {self.destination_folder} as {self.partition_depth} to {path}")
             f.write(str(self.partition_depth))
 
-    @staticmethod
-    def matches(o, key, value):
-        if key in o and o[key] == value:
-            return True
-        return False
-
     def append_json(self, new_data, path: Path):
         with path.open("r+") as file:
             # First we load existing data into a dict.
             file_data = json.load(file)
 
-            if (
-                len(
-                    [
-                        x
-                        for x in file_data
-                        if PartitionedWriter.matches(
-                            x, self.partition_key, new_data[self.partition_key]
-                        )
-                    ]
-                )
-                > 0
-            ):
+            if len([x for x in file_data if self.matching_function(new_data, x)]) > 0:
                 return
 
             # Join new_data with file_data inside emp_details
@@ -78,7 +62,7 @@ class PartitionedWriter:
                     self,
                     PartitionedWriter(
                         self.destination_folder,
-                        self.partition_key,
+                        self.partition_function,
                         new_depth,
                         False,
                         self.dynamic_depth_limit,
@@ -93,7 +77,7 @@ class PartitionedWriter:
         record_source - an iterator yielding json records
         """
         for record in record_source:
-            key = record[self.partition_key]
+            key = self.partition_function(record)
 
             dest_path = Path(self.destination_folder)
             dst_path: Path = dest_path / Path(key[: self.partition_depth] + ".json")
@@ -114,12 +98,8 @@ class PartitionedWriter:
         
         def iterator(path):
             with path.open("r") as f:
-                # try:
                 for record in json.load(f):
                     yield record
-                # except Exception as e:
-                #     print(f.read())
-                #     raise e
 
         for c in current_files:
             new_writer.write_split(iterator(c))
@@ -142,7 +122,17 @@ if __name__ == "__main__":
             for line in f:
                 yield json.loads(line)
 
-    writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", "address", partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128)
+    def key_fn(record):
+        a = record["address"]
+        b = record["block_number"]
+        m = hashlib.sha256()
+        m.update((a + b).encode())
+        return m.hexdigest()
+
+    def equality_fn(record_a, record_b):
+        return record_a["address"] == record_b["address"] and record_a["block_number"] == record_b["block_number"]
+
+    writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", key_fn, equality_fn,  partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128)
     writer.write_split(
         read_source("../sampledata/eth/contracts.json")
     )

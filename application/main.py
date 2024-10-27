@@ -39,7 +39,14 @@ def get_latest(chain):
 
 def init_transaction_partition(chain):
     logger.info("Starting transaction partition")
-    writer = PartitionedWriter(transaction_partition_dir(chain, "hash"), "hash")
+
+    def partition_func(record):
+        return record["hash"]
+
+    def equality_func(record_a, record_b):
+        return record_a["hash"] == record_b["hash"]
+
+    writer = PartitionedWriter(transaction_partition_dir(chain, "hash"), partition_func, equality_func)
     writer.write_split(read_source(transaction_file(chain)))
     logger.info("Finished transaction partition ✅")
 
