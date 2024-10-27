@@ -47,26 +47,24 @@ class PartitionedWriter:
         """
         path = Path(filename)
         with path.open("r") as f:
-            records = f.readlines()
+            for line in f:
+                record = json.loads(line)
+                hash = record["hash"]
 
-        for line in records:
-            record = json.loads(line)
-            hash = record["hash"]
+                dest_path = Path(self.destination_folder)
+                dst_path = dest_path / Path(hash[: self.partition_depth] + ".json")
 
-            dest_path = Path(self.destination_folder)
-            dst_path = dest_path / Path(hash[: self.partition_depth])
+                if dst_path.is_file():
+                    PartitionedWriter.append_json(record, dst_path)
 
-            if dst_path.is_file():
-                PartitionedWriter.append_json(record, dst_path)
-
-            else:
-                # otherwise create the file
-                with dst_path.open("w") as df:
-                    json.dump([record], df)
+                else:
+                    # otherwise create the file
+                    with dst_path.open("w") as df:
+                        json.dump([record], df)
 
 
 if __name__ == "__main__":
     writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash")
     writer.write_split(
-        "../sampledata/eth/transactions",
+        "../sampledata/eth/transactions.json",
     )
