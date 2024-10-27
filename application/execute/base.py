@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
+from execute.batch_worker import BatchWorkExecutor
+from execute.util import validate_range
+from provider import BatchHTTPProvider
 from thread_proxy import ThreadLocalProxy
 from output.file_exporter import FileExporter
-from constants import BATCH_SIZE, MAX_WORKERS
-from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
-from ethereumetl.providers.auto import get_provider_from_uri
-from ethereumetl.utils import validate_range
+from constants import BATCH_SIZE, DEFAULT_TIMEOUT, MAX_WORKERS
 from utils import get_provider_uri
 
 
@@ -22,7 +22,7 @@ class BaseExecute(ABC):
 
         uri = get_provider_uri(chain)
         self.batch_web3_provider = ThreadLocalProxy(
-            lambda: get_provider_from_uri(uri, batch=True)
+            lambda: BatchHTTPProvider(uri, request_kwargs={"timeout": DEFAULT_TIMEOUT})
         )
 
         batch_size = min(BATCH_SIZE, end_block - start_block)

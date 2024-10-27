@@ -1,9 +1,9 @@
 import json
 
+from execute.rpc_wrappers import generate_get_block_by_number_json_rpc
+from execute.util import rpc_response_batch_to_results
 from output.file_exporter import FileExporter
 from constants import CONTRACT_ADDRESSES_SET
-from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
-from ethereumetl.utils import rpc_response_batch_to_results
 from mapper.block_mapper import BlockMapper
 from mapper.transaction_mapper import TransactionMapper
 

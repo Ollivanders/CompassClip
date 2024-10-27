@@ -1,7 +1,7 @@
 import json
 import shutil
 
-from constants import BLOCK_COUNT
+from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
 from thread_proxy import ThreadLocalProxy
 from provider import BatchHTTPProvider
 from mapper.util import hex_to_dec
@@ -14,7 +14,6 @@ from log import basic_log
 
 
 basic_log()
-DEFAULT_TIMEOUT = 60
 
 
 def refresh_data_dir():

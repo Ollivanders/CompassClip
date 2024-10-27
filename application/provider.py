@@ -9,7 +9,9 @@ class BatchHTTPProvider(HTTPProvider):
         )
         request_data = text.encode("utf-8")
         raw_response = make_post_request(
-            self.endpoint_uri, request_data, **self.get_request_kwargs()
+            self.endpoint_uri,
+            request_data,
+            **self.get_request_kwargs(),  # type: ignore
         )
         response = self.decode_rpc_response(raw_response)
         self.logger.debug(
