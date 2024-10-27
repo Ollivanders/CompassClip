@@ -69,6 +69,11 @@ Run python3.11 or lower. It is recommended this project is run in venv.
 python3 -m pip install -r requirements.txt
 ```
 
+Problems with latency and python version were had with the ethereum-etl lib. Therefore, where ever
+possible the lib was replaced with a local version that did not require multiple pip packages of
+varying dependencies to run. Inspiration on the mapper layout was taking from this lib but was
+extended with the partition writer and reader for faster retrieval of data.
+
 ## Syncing
 The data collection has already ran on a subset of blocks used for the examples below (the last
 10,000). This can be downloaded from s3 using the following command:
@@ -78,6 +83,9 @@ The shell command here is abstracted into python to ensure no confusion about wh
 when the command. You will need the `aws-cli` installed locally to utilise the parallelisation of
 the download. The bucket is setup so that you will not need any credentials to sync cached versions
 of the database.
+
+Syncing currently works using ankr rpc nodes, credits to which were provided by @Compass.
+
 
 ## Syncing yourself
 
@@ -92,8 +100,16 @@ Start the flask server by running
 python3 application/app.py
 ```
 
+
+## Website version
 Remote hosted version
 http://35.179.186.61:5000
+
+Synced on:
+- eth chain
+- block ranges 21055431 - 21056431
+- the USDC contract address
+
 
 Then visit http://127.0.0.1:5000 for some examples as a frontend.
 
