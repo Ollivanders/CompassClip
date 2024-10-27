@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum JSON-RPC Client</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Chain Agnostic JSON-RPC Client</h1>
+
+    <div>
+        <h2>Set Chain</h2>
+        <input type="text" id="chainInput"
+            placeholder="Enter Chain (e.g., eth)" value="eth">
+    </div>
+
+
+    <div>
+        <h2>Get Contract Code</h2>
+        <input type="text" id="contractAddress" placeholder="Contract Address">
+        <input type="text" id="blockNumber" placeholder="Block Number">
+        <button onclick="getCode()">Get Code</button>
+        <pre id="responseCode"></pre>
+    </div>
+
+    <div>
+        <h2>Get Transaction By Hash</h2>
+        <input type="text" id="txHash" placeholder="Transaction Hash">
+        <button onclick="getTransaction()">Get Transaction</button>
+        <pre id="responseTx"></pre>
+    </div>
+
+    <div>
+        <h2>Get Block By Number</h2>
+        <input type="text" id="blockNumberInput" placeholder="Block Number">
+        <button onclick="getBlock()">Get Block</button>
+        <pre id="responseBlock"></pre>
+    </div>
+
+    <script>
+        async function callJsonRpc(method, params) {
+            const response = await fetch('/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: method,
+                    params: params,
+                    id: 1
+                }),
+            });
+            return await response.json();
+        }
+
+        async function getCode() {
+            const chain = document.getElementById('chainInput').value;
+            const address = document.getElementById('contractAddress').value;
+            const blockNumber = document.getElementById('blockNumber').value;
+            const result = await callJsonRpc("eth_getCode", [chain, address, blockNumber]);
+            document.getElementById('responseCode').innerText = JSON.stringify(result, null, 2);
+        }
+
+        async function getTransaction() {
+            const chain = document.getElementById('chainInput').value;
+            const hash = document.getElementById('txHash').value;
+            const result = await callJsonRpc("eth_getTransactionByHash", [chain, hash]);
+            document.getElementById('responseTx').innerText = JSON.stringify(result, null, 2);
+        }
+
+        async function getBlock() {
+            const chain = document.getElementById('chainInput').value;
+            const blockNumber = document.getElementById('blockNumberInput').value;
+            const result = await callJsonRpc("eth_getBlockByNumber", [chain, blockNumber]);
+            document.getElementById('responseBlock').innerText = JSON.stringify(result, null, 2);
+        }
+    </script>
+</body>
+</html>

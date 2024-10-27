@@ -6,14 +6,21 @@ BASE_DIR = THIS_DIR.parent
 DATA_DIR = THIS_DIR / "data"
 
 
+def chain_dir(chain):
+    return DATA_DIR / chain
+
+
 def transaction_file(chain):
     return DATA_DIR / chain / "transaction"
+
 
 def contract_file(chain):
     return DATA_DIR / chain / "contract"
 
+
 def block_file(chain):
     return DATA_DIR / chain / "block"
+
 
 def transaction_partition_dir(chain, partition_key):
     par_dir = DATA_DIR / chain / "transaction_partitioned" / partition_key

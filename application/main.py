@@ -1,18 +1,18 @@
 import json
 import logging
+from pathlib import Path
 
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
-<<<<<<< HEAD
 from dirs import (
+    block_file,
+    block_partition_dir,
+    chain_dir,
     contract_file,
     contract_partition_dir,
     transaction_file,
     transaction_partition_dir,
 )
 from execute.blocks import BlockExport
-=======
-from dirs import transaction_file, transaction_partition_dir, contract_file, contract_partition_dir, block_file, block_partition_dir
->>>>>>> c7a7e8b (feat: implement eth_getBlockTransactionCountByNumber)
 from execute.contract import ContractExport
 from execute.rpc_wrappers import get_latest_block_number
 from log import basic_log
@@ -21,13 +21,7 @@ from output.data_functions import contract_equality, contract_partition_key
 from output.partition_writer import PartitionedWriter, read_source
 from provider import BatchHTTPProvider
 from thread_proxy import ThreadLocalProxy
-from utils import get_provider_uri, refresh_data_dir
-<<<<<<< HEAD
-=======
 from utils import get_provider_uri
-from output.data_functions import contract_partition_key, contract_equality
-from pathlib import Path
->>>>>>> c7a7e8b (feat: implement eth_getBlockTransactionCountByNumber)
 
 basic_log()
 
@@ -44,6 +38,11 @@ def get_latest(chain):
     if number is None:
         raise ValueError("Latest block cannot be null")
     return number
+
+
+def update_latest_cache(chain, latest):
+    with chain_dir(chain).open("w") as f:
+        f.write(latest)
 
 
 def init_transaction_partition(chain):
@@ -80,17 +79,17 @@ def init_block_partition(chain):
     destination = block_partition_dir(chain, "block")
     source = block_file(chain)
 
-    with source.open('r') as f:
+    with source.open("r") as f:
         records = []
         for line in f.readlines():
             record = json.loads(line)
             records.append(record)
-        
-    with (destination / Path("0.json")).open('w') as f:
+
+    with (destination / Path("0.json")).open("w") as f:
         json.dump(records, f)
 
     depth_path = destination / Path("partition_depth.txt")
-    with depth_path.open('w') as f:
+    with depth_path.open("w") as f:
         f.write("1")
 
     logger.info("Finished block partition ✅")
