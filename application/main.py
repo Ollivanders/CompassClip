@@ -72,8 +72,8 @@ def chain_export(chain, start_block, end_block):
 
 
 def main(chain, start_block, end_block):
-    # refresh_data_dir()
-    # chain_export(chain, start_block, end_block)
+    refresh_data_dir()
+    chain_export(chain, start_block, end_block)
     init_transaction_partition(chain)
     init_contract_partition(chain)
 
