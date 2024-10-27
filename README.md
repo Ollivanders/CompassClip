@@ -12,6 +12,52 @@ of blockchain data, allowing querying of desired information by apis, abstracted
 initial sync takes chain, start block, end block as parameters. Indexing is unique my chain allowing
 for parallel implementations while syncing varying block ranges do not overlap with each other.
 
+An example output running pruning on the eth chain:
+```
+data
+└── eth
+    ├── block
+    ├── contract
+    ├── contract_partitioned
+    │   └── contract
+    │       ├── 0.json
+    │       ├── 1.json
+    │       ├── 2.json
+    │       ├── 3.json
+    │       ├── 4.json
+    │       ├── 5.json
+    │       ├── 6.json
+    │       ├── 7.json
+    │       ├── 8.json
+    │       ├── 9.json
+    │       ├── a.json
+    │       ├── b.json
+    │       ├── c.json
+    │       ├── d.json
+    │       ├── e.json
+    │       ├── f.json
+    │       └── partition_depth.txt
+    ├── transaction
+    └── transaction_partitioned
+        └── hash
+            ├── 0x00.json
+            ├── 0x01.json
+            ├── 0x02.json
+            ├── 0x03.json
+            ├── 0x04.json
+            ├── 0x05.json
+            ├── 0x06.json
+            ├── 0x07.json
+            ├── 0x08.json
+            ├── 0x09.json
+            ├── 0x0a.json
+            ├── 0x0b.json
+            ├── 0x0c.json
+            ...
+            └── partition_depth.txt
+```
+
+
 ## Installation
 Run python3.11 or lower. It is recommended this project is run in venv.
 
@@ -59,19 +105,33 @@ curl -i -X POST    -H "Content-Type: application/json; indent=4"    -d '{
 }' http://localhost:5000/api
 ```
 
-## aims
+## Aims and design philosophy
 
-- How many chains supported? - any that have an rpc client
+The most drop in solution to solving the "pruned node" issue would be patching an existing node technology,
+thus maintaining its interfaces and clients at a fraction of the size. This is explored below in
+alternative approaches but would involve a low level database formatting by monkey patching an
+existing node. This is a task that will likely demand more time than a weekends work to effectively
+create a POC. Its chances of success also hinge on being able to create a file that is still treated
+as a valid blockchain and thus could result in a reimplementation or fork of the node software all
+together.
+
+In the spirit of the hackathon and producing a viable solution, the second approach has been chosen of creating a
+data store from rpc calls, filtering these into a data structure which can be rapidly called by an
+rpc like client to serve up relevant data. In production, this could be deployed and a consumer of
+it unaware of the underlying data structure.
+
+- How many chains supported? - any that have an rpc client. Abstract dataclasses in python are
+  currently built from the rpc calls. This is done for speed an ease of pruning and can be applied
+  to support any chain type but is abstract enough to support most EVM chains in a base capacity
 - Include with n degree proximity to origin contract
   - can collect addresses and then re-run a separate exporter to append these to the file stores
 - Include all transactions - remove address filtering
-- RPC methods can it respond to - lib implementation for each as below. Focused on key look up
+- What RPC methods can it respond to - lib implementation for each as below. Focused on key look up
   patterns
 
 ## eth_ method focuses
 
 - `eth_getCode`
-- `eth_getStorageAt`
 - `eth_getTransaction`
 
 https://docs.alchemy.com/reference/eth-gettransactionbyhash
@@ -189,7 +249,7 @@ To conclude, an approach of patching a node would require:
 * hotfix the sync library to enable an option to migrate one mdbx.dat file to another
 * hope and pray the pruned mdbx.dat file is compatible
 
-The above libs would have to be maintained with each Erigon node release for each support langugage
+The above libs would have to be maintained with each Erigon node release for each support language
 (Rust, C++ and go)
 
 ### Anvil
@@ -208,5 +268,10 @@ t
 
 
 ### TheGraph
+
+Used as an intermediate data store. Creates a postgres SQL database and syncs with a blockchain.
+This can then provide a more searchable and faster response time then individual rpc calls, as well
+as a better response to getStorageAt. Creating a subgraph and then run such a service as above to
+convert to a No-SQL or otherwise format would provide a scalable prunable node.
 
 https://thegraph.com
