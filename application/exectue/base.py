@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
-from output.file_exporter import FileExporter
+from application.output.file_exporter import FileExporter
 from constants import BATCH_SIZE, MAX_WORKERS
 from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
 from ethereumetl.providers.auto import get_provider_from_uri
@@ -10,8 +10,6 @@ from utils import get_provider_uri
 
 
 class BaseExecute(ABC):
-    exporter: FileExporter
-
     def __init__(self, chain, start_block, end_block):
         validate_range(start_block, end_block)
         self.chain = chain
@@ -19,6 +17,8 @@ class BaseExecute(ABC):
         self.end_block = end_block
         self.export_blocks = True
         self.export_transactions = True
+
+        self.item_exporter = FileExporter(self.chain)
 
         uri = get_provider_uri(chain)
         self.batch_web3_provider = ThreadLocalProxy(
@@ -30,14 +30,16 @@ class BaseExecute(ABC):
 
     def run(self):
         try:
-            self.exporter.open()
+            self._start()
             self._export()
         finally:
             self._end()
 
-    @abstractmethod
+    def _start(self):
+        self.item_exporter.open()
+
     def _export(self): ...
 
     def _end(self):
         self.batch_work_executor.shutdown()
-        self.exporter.close()
+        self.item_exporter.close()

@@ -3,7 +3,7 @@ from mapper.util import hex_to_dec, to_normalized_address
 from mapper.transaction_mapper import TransactionMapper
 
 
-class EthBlock(object):
+class EthBlock:
     def __init__(self):
         self.number = None
         self.hash = None
@@ -33,7 +33,7 @@ class EthBlock(object):
         self.excess_blob_gas = None
 
 
-class BlockMapper(object):
+class BlockMapper:
     fields = [
         "number",
         "hash",

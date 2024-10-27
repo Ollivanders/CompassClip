@@ -1,7 +1,7 @@
 from mapper.util import hex_to_dec, to_normalized_address
 
 
-class EthTransaction(object):
+class EthTransaction:
     def __init__(self):
         self.hash = None
         self.nonce = None
@@ -21,7 +21,7 @@ class EthTransaction(object):
         self.blob_versioned_hashes = []
 
 
-class TransactionMapper(object):
+class TransactionMapper:
     fields = [
         "hash",
         "nonce",

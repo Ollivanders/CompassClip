@@ -1,6 +1,5 @@
 import shutil
 
-from file_exporter import FileExporter
 from constants import BLOCK_COUNT
 from dirs import DATA_DIR
 from execute.blocks import BlockExport

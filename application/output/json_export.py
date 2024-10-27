@@ -4,7 +4,7 @@ import decimal
 import six
 
 
-class JsonExport(object):
+class JsonExport:
     def __init__(self, file):
         self.indent = 4
         self.file = file

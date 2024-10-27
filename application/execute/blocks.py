@@ -1,6 +1,6 @@
 import json
 
-from file_exporter import FileExporter
+from output.file_exporter import FileExporter
 from constants import CONTRACT_ADDRESSES_SET
 from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
 from ethereumetl.utils import rpc_response_batch_to_results

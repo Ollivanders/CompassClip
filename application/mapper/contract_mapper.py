@@ -1,4 +1,4 @@
-class ContractMapper(object):
+class ContractMapper:
     fields = [
         "address",
         "bytecode",
@@ -27,7 +27,7 @@ class ContractMapper(object):
         }
 
 
-class EthContract(object):
+class EthContract:
     def __init__(self):
         self.address = None
         self.bytecode = None

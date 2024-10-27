@@ -1,19 +1,28 @@
 import logging
 
-from blockchainetl.atomic_counter import AtomicCounter
-
-from execute.json_exporter import JsonExport
+from output.json_export import JsonExport
 from dirs import DATA_DIR
 from mapper.block_mapper import BlockMapper
 from mapper.contract_mapper import ContractMapper
 from mapper.transaction_mapper import TransactionMapper
 
+import itertools
 
 TYPE_MAPPING = {
     "block": BlockMapper,
     "transaction": TransactionMapper,
     "contract": ContractMapper,
 }
+
+
+class AtomicCounter:
+    def __init__(self):
+        self._counter = itertools.count()
+        next(self._counter)
+
+    def increment(self, increment=1):
+        assert increment > 0
+        return [next(self._counter) for _ in range(0, increment)][-1]
 
 
 class FileExporter:
