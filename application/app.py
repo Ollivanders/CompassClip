@@ -52,8 +52,8 @@ def get_transaction_by_hash(chain, hash: str) -> list:
 
 @jsonrpc.method("eth_getBlockByNumber")
 def get_block_by_number(chain, number: str) -> list:
-    reader = get_reader_transaction(chain, "block")
-    return reader.get_records({"block": number})
+    reader = get_reader_blocks(chain, "block")
+    return reader.get_records({"number": int(number)})
 
 
 @jsonrpc.method("eth_getBlockTransactionCountByNumber")
