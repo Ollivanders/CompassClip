@@ -47,16 +47,15 @@ class FileExporter:
 
     def open(self):
         for item_type in self.data_types:
-            filepath = self.get_data_path(item_type)
-            file = open(filepath, "wb")
+            self.open_file(item_type)
 
-            self.file_mapping[item_type] = file
-            self.exporter_mapping[item_type] = JsonExport(file)
-            self.counter_mapping[item_type] = AtomicCounter()
+    def open_file(self, item_key):
+        filepath = self.get_data_path(item_key)
+        file = open(filepath, "wb")
 
-    def export_items(self, items):
-        for item in items:
-            self.export_item(item)
+        self.file_mapping[item_key] = file
+        self.exporter_mapping[item_key] = JsonExport(file)
+        self.counter_mapping[item_key] = AtomicCounter()
 
     def export_item(self, item):
         item_type = item.get("type")
