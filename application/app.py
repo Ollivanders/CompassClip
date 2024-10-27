@@ -60,10 +60,13 @@ def get_block_by_number(chain, number: str) -> dict:
 
 
 @jsonrpc.method("eth_getBlockTransactionCountByNumber")
-def get_block_transaction_count_by_number(chain, blockNumber: str) -> int:
-    reader = get_reader_blocks(chain, "block")
-    records = reader.get_records({"number": int(blockNumber)})
-    return records[0]["transaction_count"] if len(records) > 0 else 0
+def get_block_transaction_count_by_number(chain, number: str):
+    reader = get_reader_transaction(chain, "block")
+    block = reader.get_records({"block": number})
+    return {
+        "used_transaction_count": block.get("used_transaction_count"),
+        "transaction_count": block.get("transaction_count"),
+    }
 
 
 if __name__ == "__main__":

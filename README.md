@@ -17,6 +17,10 @@ An example output running pruning on the eth chain:
 data
 └── eth
     ├── block
+    ├── block_partitioned
+    │   └── block
+    │       ├── 0.json
+    │       └── partition_depth.txt
     ├── contract
     ├── contract_partitioned
     │   └── contract
