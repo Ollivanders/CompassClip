@@ -1,16 +1,10 @@
 import json
 from pathlib import Path
+import logging
 
 
 class PartitionedWriter:
-    def __init__(
-        self,
-        destination_folder,
-        partition_key,
-        partition_depth=4,
-        dynamic_depth=True,
-        dynamic_depth_limit=20,
-    ) -> None:
+    def __init__(self, destination_folder, partition_key, partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128) -> None:
         self.destination_folder = destination_folder
         self.partition_key = partition_key
         self.partition_depth = partition_depth
@@ -24,6 +18,7 @@ class PartitionedWriter:
         self._write_depth_file()
 
     def _initialize_target_dir(self):
+        logging.debug(f"Initializing destination direction {self.destination_folder}")
         Path(self.destination_folder).mkdir(parents=True, exist_ok=True)
 
     def _get_depth_path(self):
@@ -32,12 +27,17 @@ class PartitionedWriter:
     def _read_depth_file(self):
         path = self._get_depth_path()
         if path.is_file():
-            with path.open("r") as f:
-                self.partition_depth = int(f.read())
+            with path.open('r') as f:
+                partition_depth = int(f.read())
+                logging.debug(f"Found parition depth for {self.destination_folder} as {partition_depth} from {path}")
+                self.partition_depth = partition_depth
+        else:
+            logging.debug(f"Did not find a partition depth entry in {self.destination_folder}")
 
     def _write_depth_file(self):
-        path = self._get_depth_path()
-        with path.open("w") as f:
+        path = self._get_depth_path() 
+        with path.open('w') as f:
+            logging.debug(f"Writing parition depth for {self.destination_folder} as {self.partition_depth} to {path}")
             f.write(str(self.partition_depth))
 
     @staticmethod
@@ -108,8 +108,10 @@ class PartitionedWriter:
 
     @staticmethod
     def rewrite_partitions(old_writer, new_writer):
-        current_files = Path(old_writer.destination_folder).glob("*.json")
+        current_files = Path(old_writer.destination_folder).glob('*.json')
 
+        current_files = [c for c in current_files if len(c.stem) == old_writer.partition_depth]
+        
         def iterator(path):
             with path.open("r") as f:
                 # try:
@@ -121,6 +123,8 @@ class PartitionedWriter:
 
         for c in current_files:
             new_writer.write_split(iterator(c))
+
+        for c in current_files:
             c.unlink()
 
 
@@ -132,11 +136,14 @@ def read_source(filename):
 
 
 if __name__ == "__main__":
-    writer = PartitionedWriter(
-        "../sampledata/eth/partitioned-contracts/",
-        "address",
-        partition_depth=4,
-        dynamic_depth=True,
-        dynamic_depth_limit=20,
+    def read_source(filename):
+        path = Path(filename)
+        with path.open("r") as f:
+            for line in f:
+                yield json.loads(line)
+
+    writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", "address", partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128)
+    writer.write_split(
+        read_source("../sampledata/eth/contracts.json")
     )
     writer.write_split(read_source("../sampledata/eth/contracts.json"))

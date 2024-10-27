@@ -3,6 +3,7 @@ from pathlib import Path
 
 from dirs import transaction_partition_dir
 
+import logging
 
 class PartitionedReader:
     def __init__(self, archive_location, partition_key) -> None:
