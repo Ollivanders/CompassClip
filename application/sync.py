@@ -40,8 +40,8 @@ def sync_s3_to_local():
         print(e.stderr)
 
 
-print("Starting sync from local to S3...")
-sync_local_to_s3()
+# print("Starting sync from local to S3...")
+# sync_local_to_s3()
 
-# print("Starting sync from S3 to local...")
-# sync_s3_to_local()
+print("Starting sync from S3 to local...")
+sync_s3_to_local()
