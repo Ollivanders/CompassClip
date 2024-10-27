@@ -11,7 +11,6 @@ from execute.rpc_wrappers import get_latest_block_number
 from utils import get_provider_uri
 from dirs import DATA_DIR, transaction_file, transaction_partition_dir
 from execute.blocks import BlockExport
-from execute.contract import ContractExport
 from log import basic_log
 
 
@@ -53,11 +52,11 @@ def chain_export(chain, start_block, end_block):
             start_block=start_block,
             end_block=end_block,
         ),
-        ContractExport(
-            chain=chain,
-            start_block=start_block,
-            end_block=end_block,
-        ),
+        # ContractExport(
+        #     chain=chain,
+        #     start_block=start_block,
+        #     end_block=end_block,
+        # ),
     ]
     for job in jobs:
         job.run()
@@ -71,8 +70,9 @@ def main(chain, start_block, end_block):
 
 if __name__ == "__main__":
     latest = get_latest("eth")
-    logger.info(f"Getting from block number {latest}")
-    main("eth", latest - BLOCK_COUNT, latest)
+    start = latest - BLOCK_COUNT
+    logger.info(f"Getting from block number {start} - {latest}")
+    main("eth", start, latest)
 
     # interesting
     # main("eth", 21044559, 21044559 + BLOCK_COUNT)
