@@ -2,7 +2,6 @@ import shutil
 from dirs import DATA_DIR
 from constants import ANKR_KEY
 
-
 # eth
 # polygon
 def get_provider_uri(chain):

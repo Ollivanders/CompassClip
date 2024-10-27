@@ -1,14 +1,13 @@
 import json
 from pathlib import Path
 
-from dirs import transaction_partition_dir
-
 import logging
 
 class PartitionedReader:
-    def __init__(self, archive_location, partition_key) -> None:
+    def __init__(self, archive_location, partition_key_function, matching_function) -> None:
         self.archive_location = archive_location
-        self.partition_key = partition_key
+        self.partition_key_function = partition_key_function
+        self.matching_function = matching_function
         self._read_depth_file()
 
     def _get_depth_path(self):
@@ -20,9 +19,9 @@ class PartitionedReader:
             with path.open("r") as f:
                 self.partition_depth = int(f.read())
 
-    def get_records(self, search_value):
+    def get_records(self, search_record):
         path = Path(self.archive_location) / Path(
-            search_value[: self.partition_depth] + ".json"
+            self.partition_key_function(search_record)[: self.partition_depth] + ".json"
         )
 
         if not path.is_file():
@@ -30,12 +29,14 @@ class PartitionedReader:
 
         with path.open("r") as f:
             records = json.load(f)
-            return [r for r in records if r[self.partition_key] == search_value]
+            print([r["block_number"] for r in records])
+            return [r for r in records if self.matching_function(search_record, r)]
 
 
 if __name__ == "__main__":
-    reader = PartitionedReader(transaction_partition_dir("eth", "hash"), "hash")
-    records = reader.get_records(
-        "0x74ebd073bb3d30b7544f0b0a2201ffe4f45856943f2e9505b7094848a103067e"
-    )
-    print(records)
+    pass
+    # reader = PartitionedReader(transaction_partition_dir("eth", "hash"), "hash")
+    # records = reader.get_records(
+    #     "0x74ebd073bb3d30b7544f0b0a2201ffe4f45856943f2e9505b7094848a103067e"
+    # )
+    # print(records)

@@ -4,7 +4,7 @@ import logging
 import hashlib
 
 class PartitionedWriter:
-    def __init__(self, destination_folder, partition_function, matching_function, partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128) -> None:
+    def __init__(self, destination_folder, partition_function, matching_function, partition_depth=1, dynamic_depth=True, dynamic_depth_limit=128) -> None:
         self.destination_folder = destination_folder
         self.partition_function = partition_function
         self.matching_function = matching_function
@@ -122,18 +122,8 @@ if __name__ == "__main__":
             for line in f:
                 yield json.loads(line)
 
-    def key_fn(record):
-        a = record["address"]
-        b = record["block_number"]
-        m = hashlib.sha256()
-        m.update((a + b).encode())
-        return m.hexdigest()
-
-    def equality_fn(record_a, record_b):
-        return record_a["address"] == record_b["address"] and record_a["block_number"] == record_b["block_number"]
-
-    writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", key_fn, equality_fn,  partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128)
-    writer.write_split(
-        read_source("../sampledata/eth/contracts.json")
-    )
-    writer.write_split(read_source("../sampledata/eth/contracts.json"))
+    # writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", key_fn, equality_fn,  partition_depth=4, dynamic_depth=True, dynamic_depth_limit=128)
+    # writer.write_split(
+    #     read_source("../sampledata/eth/contracts.json")
+    # )
+    # writer.write_split(read_source("../sampledata/eth/contracts.json"))
