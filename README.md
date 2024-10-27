@@ -4,6 +4,14 @@ Runs SuperSet JSON-RPC calls to a chain, storing the result in S3.
 
 Provides a wrapper library for making RPC calls to these files to collect desired information
 
+## Overview
+
+The system syncs with an archive node (currently by rpc calls), creating a local partitioned file
+set based on block, transaction and contract data. These represent efficient yet responsive stores
+of blockchain data, allowing querying of desired information by apis, abstracted as rpc methods. The
+initial sync takes chain, start block, end block as parameters. Indexing is unique my chain allowing
+for parallel implementations while syncing varying block ranges do not overlap with each other.
+
 ## Installation
 Run python3.11 or lower. It is recommended this project is run in venv.
 
@@ -17,15 +25,25 @@ The data collection has already ran on a subset of blocks used for the examples 
 
 `python3 application/sync.py`
 The shell command here is abstracted into python to ensure no confusion about what dir you should be
-when the command. You will need the `aws-cli` installed locally to utilise the parallelisation of the download.
+when the command. You will need the `aws-cli` installed locally to utilise the parallelisation of
+the download. The bucket is setup so that you will not need any credentials to sync cached versions
+of the database.
 
+## Syncing yourself
 
-## Running
+There is currently not a cli for configuring options, however the latest 1000 blocks can be synced
+by running
+`python3 application/main.py`
+
+## Making RPC calls
 
 Start the flask server by running
 ```bash
-flask --app application run
+python3 application/app.py
 ```
+Then visit http://127.0.0.1:5000 for some examples as a frontend.
+
+![frontend](docs/frontend.jpg)
 
 Query the api by hitting the json rpc endpoint with the following
 ```bash
