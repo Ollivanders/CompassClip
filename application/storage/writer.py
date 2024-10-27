@@ -3,10 +3,30 @@ from pathlib import Path
 
 
 class PartitionedWriter:
-    def __init__(self, destination_folder, partition_key, partition_depth=4) -> None:
+    def __init__(self, destination_folder, partition_key, partition_depth=4, dynamic_depth=True, dynamic_depth_limit=20) -> None:
         self.destination_folder = destination_folder
         self.partition_key = partition_key
         self.partition_depth = partition_depth
+        self.dynamic_depth = dynamic_depth
+        self.dynamic_depth_limit = dynamic_depth_limit
+        if dynamic_depth:
+            self._read_depth_file()
+        self._write_depth_file()
+
+
+    def _get_depth_path(self):
+        return Path(self.destination_folder) / Path("partition_depth.txt")
+
+    def _read_depth_file(self):
+        path = self._get_depth_path()
+        if path.is_file():
+            with path.open('r') as f:
+                self.partition_depth = int(f.read())
+
+    def _write_depth_file(self):
+        path = self._get_depth_path() 
+        with path.open('w') as f:
+            f.write(str(self.partition_depth))
 
     @staticmethod
     def matches(o, key, value):
@@ -14,8 +34,7 @@ class PartitionedWriter:
             return True
         return False
 
-    @staticmethod
-    def append_json(new_data, path: Path):
+    def append_json(self, new_data, path: Path):
         with path.open("r+") as file:
             # First we load existing data into a dict.
             file_data = json.load(file)
@@ -39,11 +58,17 @@ class PartitionedWriter:
             # convert back to json.
             json.dump(file_data, file)
 
+            if self.dynamic_depth and len(file_data) > self.dynamic_depth_limit:
+                new_depth = self.partition_depth + 1
+                PartitionedWriter.rewrite_partitions(self, PartitionedWriter(self.destination_folder, self.partition_key, new_depth, False, self.dynamic_depth_limit))
+                self.partition_depth = new_depth
+
+
     def write_split(self, record_source):
-        """Partition a json file into multiple files based on the partition key
+        """Partition a json source into multiple files based on the partition key
 
         args:
-        filename - source json file to load from
+        record_source - an iterator yielding json records
         """
         for record in record_source:
             hash = record["hash"]
@@ -52,14 +77,26 @@ class PartitionedWriter:
             dst_path: Path = dest_path / Path(hash[: self.partition_depth] + ".json")
 
             if dst_path.is_file():
-                PartitionedWriter.append_json(record, dst_path)
+                self.append_json(record, dst_path)
+
             else:
                 # otherwise create the file
                 with dst_path.open("w") as df:
                     json.dump([record], df)
 
-    # def rewrite_partitions(self, depth=4):
+    @staticmethod
+    def rewrite_partitions(old_writer, new_writer):
+        current_files = Path(old_writer.destination_folder).glob('*.json')
+        
+        def iterator(path):
+            with path.open('r') as f:
+                for record in json.load(f):
+                    yield record
 
+        for c in current_files:
+            new_writer.write_split(iterator(c))
+            c.unlink()
+        
 
 def read_source(filename):
     path = Path(filename)
@@ -69,5 +106,14 @@ def read_source(filename):
 
 
 if __name__ == "__main__":
-    writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash")
-    writer.write_split(read_source("../sampledata/eth/transactions.json"))
+
+    def read_source(filename):
+        path = Path(filename)
+        with path.open("r") as f:
+            for line in f:
+                yield json.loads(line)
+
+    writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash", partition_depth=4, dynamic_depth=True, dynamic_depth_limit=20)
+    writer.write_split(
+        read_source("../sampledata/eth/transactions.json")
+    )
