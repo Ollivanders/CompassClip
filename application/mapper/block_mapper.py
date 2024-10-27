@@ -5,6 +5,32 @@ from mapper.transaction_mapper import TransactionMapper
 
 
 class BlockMapper(object):
+    fields = [
+        "number",
+        "hash",
+        "parent_hash",
+        "nonce",
+        "sha3_uncles",
+        "logs_bloom",
+        "transactions_root",
+        "state_root",
+        "receipts_root",
+        "miner",
+        "difficulty",
+        "total_difficulty",
+        "size",
+        "extra_data",
+        "gas_limit",
+        "gas_used",
+        "timestamp",
+        "transaction_count",
+        "base_fee_per_gas",
+        "withdrawals_root",
+        "withdrawals",
+        "blob_gas_used",
+        "excess_blob_gas",
+    ]
+
     def __init__(self, transaction_mapper=None):
         if transaction_mapper is None:
             self.transaction_mapper = TransactionMapper()
@@ -13,7 +39,7 @@ class BlockMapper(object):
 
     def json_dict_to_block(self, json_dict):
         block = EthBlock()
-        block.number = hex_to_dec(json_dict.get("number"))
+        block.number = hex_to_dec(json_dict.get("number"))  # type: ignore
         block.hash = json_dict.get("hash")
         block.parent_hash = json_dict.get("parentHash")
         block.nonce = json_dict.get("nonce")
@@ -22,18 +48,18 @@ class BlockMapper(object):
         block.transactions_root = json_dict.get("transactionsRoot")
         block.state_root = json_dict.get("stateRoot")
         block.receipts_root = json_dict.get("receiptsRoot")
-        block.miner = to_normalized_address(json_dict.get("miner"))
-        block.difficulty = hex_to_dec(json_dict.get("difficulty"))
-        block.total_difficulty = hex_to_dec(json_dict.get("totalDifficulty"))
-        block.size = hex_to_dec(json_dict.get("size"))
+        block.miner = to_normalized_address(json_dict.get("miner"))  # type: ignore
+        block.difficulty = hex_to_dec(json_dict.get("difficulty"))  # type: ignore
+        block.total_difficulty = hex_to_dec(json_dict.get("totalDifficulty"))  # type: ignore
+        block.size = hex_to_dec(json_dict.get("size"))  # type: ignore
         block.extra_data = json_dict.get("extraData")
-        block.gas_limit = hex_to_dec(json_dict.get("gasLimit"))
-        block.gas_used = hex_to_dec(json_dict.get("gasUsed"))
-        block.timestamp = hex_to_dec(json_dict.get("timestamp"))
-        block.base_fee_per_gas = hex_to_dec(json_dict.get("baseFeePerGas"))
+        block.gas_limit = hex_to_dec(json_dict.get("gasLimit"))  # type: ignore
+        block.gas_used = hex_to_dec(json_dict.get("gasUsed"))  # type: ignore
+        block.timestamp = hex_to_dec(json_dict.get("timestamp"))  # type: ignore
+        block.base_fee_per_gas = hex_to_dec(json_dict.get("baseFeePerGas"))  # type: ignore
         block.withdrawals_root = json_dict.get("withdrawalsRoot")
-        block.blob_gas_used = hex_to_dec(json_dict.get("blobGasUsed"))
-        block.excess_blob_gas = hex_to_dec(json_dict.get("excessBlobGas"))
+        block.blob_gas_used = hex_to_dec(json_dict.get("blobGasUsed"))  # type: ignore
+        block.excess_blob_gas = hex_to_dec(json_dict.get("excessBlobGas"))  # type: ignore
 
         if "transactions" in json_dict:
             block.transactions = [

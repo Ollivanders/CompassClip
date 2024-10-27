@@ -1,16 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+
+from composite_exporter import ItemExporter
+from constants import BATCH_SIZE, MAX_WORKERS
 from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
 from ethereumetl.providers.auto import get_provider_from_uri
 from ethereumetl.thread_local_proxy import ThreadLocalProxy
 from ethereumetl.utils import validate_range
-from blockchainetl.jobs.exporters.composite_item_exporter import CompositeItemExporter
-
-from constants import BATCH_SIZE, MAX_WORKERS
 from utils import get_provider_uri
 
 
 class BaseExport(ABC):
-    item_exporter: CompositeItemExporter
+    item_exporter: ItemExporter
 
     def __init__(self, chain, start_block, end_block):
         validate_range(start_block, end_block)
@@ -19,6 +19,8 @@ class BaseExport(ABC):
         self.end_block = end_block
         self.export_blocks = True
         self.export_transactions = True
+
+        self.item_exporter = ItemExporter(self.chain)
 
         uri = get_provider_uri(chain)
         self.batch_web3_provider = ThreadLocalProxy(

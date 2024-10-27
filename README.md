@@ -142,6 +142,9 @@ To conclude, an approach of patching a node would require:
 The above libs would have to be maintained with each Erigon node release for each support langugage
 (Rust, C++ and go)
 
+### Anvil
+
+
 ### Geth
 
 Running a private pruned blockchain as a geth node.
@@ -152,3 +155,8 @@ t
 * Sync on a polling basis to a new chain, mining each block on with only necessary transactions.
   This would not be a valid blockchain and would need be a new protocol specific for each chain and
   therefore a heavy approach.
+
+
+### TheGraph
+
+https://thegraph.com

@@ -1,4 +1,5 @@
 import shutil
+from constants import BLOCK_COUNT
 from export.contract import ContractExport
 from log_utils import logging_basic_config
 
@@ -30,4 +31,4 @@ def main(chain, start_block, end_block):
 
 
 if __name__ == "__main__":
-    main("eth", 21044559, 21044559 + 50)
+    main("eth", 21044559, 21044559 + BLOCK_COUNT)

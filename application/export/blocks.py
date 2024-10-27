@@ -1,15 +1,12 @@
 import json
 
+from constants import CONTRACT_ADDRESSES_SET
 from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
 from ethereumetl.utils import rpc_response_batch_to_results
-
 from mapper.block_mapper import BlockMapper
 from mapper.transaction_mapper import TransactionMapper
-from output import BLOCK_FIELDS_TO_EXPORT, TRANSACTION_FIELDS_TO_EXPORT
-from constants import CONTRACT_ADDRESSES_SET
+
 from export.base import BaseExport
-from utils import get_data_path
-from blockchainetl.jobs.exporters.composite_item_exporter import CompositeItemExporter
 
 
 class BlockExport(BaseExport):
@@ -18,17 +15,6 @@ class BlockExport(BaseExport):
 
         self.block_mapper = BlockMapper()
         self.transaction_mapper = TransactionMapper()
-
-        self.item_exporter = CompositeItemExporter(
-            filename_mapping={
-                "block": get_data_path(self.chain, "blocks"),
-                "transaction": get_data_path(self.chain, "transactions"),
-            },
-            field_mapping={
-                "block": BLOCK_FIELDS_TO_EXPORT,
-                "transaction": TRANSACTION_FIELDS_TO_EXPORT,
-            },
-        )
 
     def _export(self):
         self.batch_work_executor.execute(
@@ -47,9 +33,6 @@ class BlockExport(BaseExport):
         response = self.batch_web3_provider.make_batch_request(json.dumps(blocks_rpc))
 
         results = rpc_response_batch_to_results(response)
-        # for result in results:
-        #     print(result)
-        #     raise Exception
         blocks = [self.block_mapper.json_dict_to_block(result) for result in results]
 
         for block in blocks:

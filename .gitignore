@@ -167,3 +167,4 @@ pyvenv.cfg
 lib64
 bin/
 application/tmp.txt
+application/sampledata
