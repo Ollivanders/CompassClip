@@ -1,13 +1,4 @@
 class ContractMapper:
-    fields = [
-        "address",
-        "bytecode",
-        "function_sighashes",
-        "is_erc20",
-        "is_erc721",
-        "block_number",
-    ]
-
     def rpc_result_to_contract(self, contract_address, rpc_result):
         contract = EthContract()
         contract.address = contract_address

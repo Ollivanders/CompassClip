@@ -44,19 +44,16 @@ class BlockExport(BaseExecute):
         for access in access_list:
             if access["address"] in CONTRACT_ADDRESSES_SET:
                 return True
-
         return False
 
     def _export_block(self, block):
         self.exporter.export_item(self.block_mapper.to_dict(block))
 
         for tx in block.transactions:
-            tx_mapper = self.transaction_mapper.to_dict(tx)
-
             if (
-                tx_mapper["from_address"] in CONTRACT_ADDRESSES_SET
-                or tx_mapper["to_address"] in CONTRACT_ADDRESSES_SET
+                tx.from_address in CONTRACT_ADDRESSES_SET
+                or tx.to_address in CONTRACT_ADDRESSES_SET
             ):
-                self.exporter.export_item(tx_mapper)
-            elif self._is_contract_in_access_list(tx_mapper["access_list"]):
-                self.exporter.export_item(tx_mapper)
+                self.exporter.export_item(tx.to_dict())
+            elif self._is_contract_in_access_list(tx.access_list):
+                self.exporter.export_item(tx.to_dict())

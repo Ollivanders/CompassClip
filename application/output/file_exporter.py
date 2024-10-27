@@ -1,5 +1,6 @@
 import logging
 
+
 from output.json_export import JsonExport
 from dirs import DATA_DIR
 from mapper.block_mapper import BlockMapper
@@ -59,6 +60,7 @@ class FileExporter:
 
     def export_item(self, item):
         item_type = item.get("type")
+
         if item_type is None:
             raise ValueError('"type" key is not found in item {}'.format(repr(item)))
 

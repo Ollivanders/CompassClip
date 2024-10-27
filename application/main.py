@@ -71,7 +71,7 @@ def main(chain, start_block, end_block):
 
 if __name__ == "__main__":
     latest = get_latest("eth")
-    print(latest)
+    logger.info(f"Getting from block number {latest}")
     main("eth", latest - BLOCK_COUNT, latest)
 
     # interesting
