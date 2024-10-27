@@ -1,15 +1,13 @@
 import logging
 
 from blockchainetl.atomic_counter import AtomicCounter
-from blockchainetl.exporters import JsonLinesItemExporter
-from blockchainetl.file_utils import close_silently, get_file_handle
 
+from export.json_exporter import JsonExport
 from dirs import DATA_DIR
 from mapper.block_mapper import BlockMapper
 from mapper.contract_mapper import ContractMapper
 from mapper.transaction_mapper import TransactionMapper
 
-FILE_TYPES = ["block", "transaction", "contract"]
 
 TYPE_MAPPING = {
     "block": BlockMapper,
@@ -34,15 +32,12 @@ class ItemExporter:
         return data_path
 
     def open(self):
-        for item_type in FILE_TYPES:
+        for item_type in TYPE_MAPPING.keys():
             filepath = self.get_data_path(item_type)
-            file = get_file_handle(filepath, binary=True)
+            file = open(filepath, "wb")
             self.file_mapping[item_type] = file
 
-            self.exporter_mapping[item_type] = JsonLinesItemExporter(
-                file,
-                fields_to_export=TYPE_MAPPING[item_type].fields,
-            )
+            self.exporter_mapping[item_type] = JsonExport(file)
             self.counter_mapping[item_type] = AtomicCounter()
 
     def export_items(self, items):
@@ -65,7 +60,7 @@ class ItemExporter:
 
     def close(self):
         for item_type, file in self.file_mapping.items():
-            close_silently(file)
+            file.close()
 
             counter = self.counter_mapping[item_type]
             if counter is not None:

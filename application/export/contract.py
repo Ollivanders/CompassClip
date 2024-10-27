@@ -40,9 +40,7 @@ class ContractExport(BaseExport):
                 contracts.append(contract)
 
             for contract in contracts:
-                self.item_exporter.export_item(
-                    self.contract_mapper.contract_to_dict(contract)
-                )
+                self.item_exporter.export_item(self.contract_mapper.to_dict(contract))
 
     def _get_contract(self, contract_address, rpc_result):
         contract = self.contract_mapper.rpc_result_to_contract(

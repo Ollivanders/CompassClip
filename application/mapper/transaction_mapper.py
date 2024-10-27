@@ -54,7 +54,7 @@ class TransactionMapper(object):
 
         return transaction
 
-    def transaction_to_dict(self, transaction):
+    def to_dict(self, transaction):
         return {
             "type": "transaction",
             "hash": transaction.hash,

@@ -18,7 +18,7 @@ class ContractMapper(object):
 
         return contract
 
-    def contract_to_dict(self, contract):
+    def to_dict(self, contract):
         return {
             "type": "contract",
             "address": contract.address,

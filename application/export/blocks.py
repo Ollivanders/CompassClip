@@ -47,11 +47,11 @@ class BlockExport(BaseExport):
 
     def _export_block(self, block):
         if self.export_blocks:
-            self.item_exporter.export_item(self.block_mapper.block_to_dict(block))
+            self.item_exporter.export_item(self.block_mapper.to_dict(block))
 
         if self.export_transactions:
             for tx in block.transactions:
-                tx_mapper = self.transaction_mapper.transaction_to_dict(tx)
+                tx_mapper = self.transaction_mapper.to_dict(tx)
 
                 if (
                     tx_mapper["from_address"] in CONTRACT_ADDRESSES_SET

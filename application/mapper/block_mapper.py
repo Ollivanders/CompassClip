@@ -88,7 +88,7 @@ class BlockMapper(object):
             for withdrawal in withdrawals
         ]
 
-    def block_to_dict(self, block):
+    def to_dict(self, block):
         return {
             "type": "block",
             "number": block.number,
