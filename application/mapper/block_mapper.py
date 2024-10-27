@@ -1,37 +1,36 @@
-from mapper.util import hex_to_dec, to_normalized_address
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional
 
-
-from dataclasses import dataclass, asdict
-from typing import List, Any, Dict
 from mapper.transaction_mapper import EthTx
+from mapper.util import hex_to_dec, to_normalized_address
 
 
 @dataclass
 class EthBlock:
-    number: int | None = None
-    hash: str | None = None
-    parent_hash: str | None = None
-    nonce: str | None = None
-    sha3_uncles: str | None = None
-    logs_bloom: str | None = None
-    transactions_root: str | None = None
-    state_root: str | None = None
-    receipts_root: str | None = None
-    miner: str | None = None
-    difficulty: int | None = None
-    total_difficulty: int | None = None
-    size: int | None = None
-    extra_data: str | None = None
-    gas_limit: int | None = None
-    gas_used: int | None = None
-    timestamp: int | None = None
-    withdrawals_root: str | None = None
-    blob_gas_used: int | None = None
-    excess_blob_gas: int | None = None
-    transactions: List[EthTx] = []
-    withdrawals: List[Dict[str, Any]] = []
-    transaction_count: int = 0
-    base_fee_per_gas: int = 0
+    number: Optional[int] = None
+    hash: Optional[str] = None
+    parent_hash: Optional[str] = None
+    nonce: Optional[str] = None
+    sha3_uncles: Optional[str] = None
+    logs_bloom: Optional[str] = None
+    transactions_root: Optional[str] = None
+    state_root: Optional[str] = None
+    receipts_root: Optional[str] = None
+    miner: Optional[str] = None
+    difficulty: Optional[int] = None
+    total_difficulty: Optional[int] = None
+    size: Optional[int] = None
+    extra_data: Optional[str] = None
+    gas_limit: Optional[int] = None
+    gas_used: Optional[int] = None
+    timestamp: Optional[int] = None
+    withdrawals_root: Optional[str] = None
+    blob_gas_used: Optional[int] = None
+    excess_blob_gas: Optional[int] = None
+    transactions: Optional[List[EthTx]] = None
+    withdrawals: Optional[List[Dict[str, Any]]] = None
+    transaction_count: Optional[int] = 0
+    base_fee_per_gas: Optional[int] = 0
 
     type: str = "block"
 

@@ -1,28 +1,30 @@
-from dataclasses import dataclass, asdict
-from typing import Dict, List, Any
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional
+
 from mapper.util import hex_to_dec, to_normalized_address
 
 
 @dataclass
 class EthTx:
-    hash: str | None = None
-    nonce: int | None = None
-    block_hash: str | None = None
-    block_number: int | None = None
-    block_timestamp: int | None = None
-    transaction_index: int | None = None
-    from_address: str | None = None
-    to_address: str | None = None
-    value: int | None = None
-    gas: int | None = None
-    gas_price: int | None = None
-    input: str | None = None
-    max_fee_per_gas: int | None = None
-    max_priority_fee_per_gas: int | None = None
-    transaction_type: int | None = None
-    max_fee_per_blob_gas: int | None = None
-    blob_versioned_hashes: List[str] = []
-    access_list: List[Any] = []
+    hash: Optional[str] = None
+    nonce: Optional[int] = None
+    block_hash: Optional[str] = None
+    block_number: Optional[int] = None
+    block_timestamp: Optional[int] = None
+    transaction_index: Optional[int] = None
+    from_address: Optional[str] = None
+    to_address: Optional[str] = None
+    value: Optional[int] = None
+    gas: Optional[int] = None
+    gas_price: Optional[int] = None
+    input: Optional[str] = None
+    max_fee_per_gas: Optional[int] = None
+    max_priority_fee_per_gas: Optional[int] = None
+    transaction_type: Optional[int] = None
+    max_fee_per_blob_gas: Optional[int] = None
+    blob_versioned_hashes: Optional[List[str]] = None
+    access_list: Optional[List[Any]] = None
+    type: str = "transaction"
 
     type: str = "transaction"
 

@@ -6,7 +6,7 @@ from typing import List, Optional
 class EthContract:
     address: str
     bytecode: str
-    function_sighashes: List[str] = []
+    function_sighashes: Optional[List[str]] = None
     is_erc20: bool = False
     is_erc721: bool = False
     block_number: Optional[int] = None
