@@ -1,19 +1,23 @@
 import json
 import logging
 
-from execute.blocks import BlockExport
 from constants import BLOCK_COUNT, DEFAULT_TIMEOUT
-from dirs import transaction_file, transaction_partition_dir, contract_file, contract_partition_dir
+from dirs import (
+    contract_file,
+    contract_partition_dir,
+    transaction_file,
+    transaction_partition_dir,
+)
+from execute.blocks import BlockExport
 from execute.contract import ContractExport
 from execute.rpc_wrappers import get_latest_block_number
 from log import basic_log
 from mapper.util import hex_to_dec
+from output.data_functions import contract_equality, contract_partition_key
 from output.partition_writer import PartitionedWriter, read_source
 from provider import BatchHTTPProvider
 from thread_proxy import ThreadLocalProxy
 from utils import get_provider_uri, refresh_data_dir
-from utils import get_provider_uri
-from output.data_functions import contract_partition_key, contract_equality
 
 basic_log()
 
@@ -41,7 +45,9 @@ def init_transaction_partition(chain):
     def equality_func(record_a, record_b):
         return record_a["hash"] == record_b["hash"]
 
-    writer = PartitionedWriter(transaction_partition_dir(chain, "hash"), partition_func, equality_func)
+    writer = PartitionedWriter(
+        transaction_partition_dir(chain, "hash"), partition_func, equality_func
+    )
     writer.write_split(read_source(transaction_file(chain)))
     logger.info("Finished transaction partition ✅")
 
@@ -49,7 +55,11 @@ def init_transaction_partition(chain):
 def init_contract_partition(chain):
     logger.info("Starting contract partition")
 
-    writer = PartitionedWriter(contract_partition_dir(chain, "contract"), contract_partition_key, contract_equality)
+    writer = PartitionedWriter(
+        contract_partition_dir(chain, "contract"),
+        contract_partition_key,
+        contract_equality,
+    )
     writer.write_split(read_source(contract_file(chain)))
     logger.info("Finished contract partition ✅")
 

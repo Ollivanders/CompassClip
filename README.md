@@ -20,7 +20,6 @@ The shell command here is abstracted into python to ensure no confusion about wh
 when the command. You will need the `aws-cli` installed locally to utilise the parallelisation of the download.
 
 
-
 ## Running
 
 Start the flask server by running

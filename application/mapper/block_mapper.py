@@ -30,6 +30,7 @@ class EthBlock:
     transactions: Optional[List[EthTx]] = None
     withdrawals: Optional[List[Dict[str, Any]]] = None
     transaction_count: Optional[int] = 0
+    used_transaction_count: Optional[int] = 0
     base_fee_per_gas: Optional[int] = 0
 
     type: str = "block"

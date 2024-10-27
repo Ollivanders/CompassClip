@@ -43,13 +43,18 @@ class BlockExport(BaseExecute):
         return False
 
     def _export_block(self, block):
-        self.exporter.export_item(block.to_dict())
+        used_transactions_count = 0
 
         for tx in block.transactions:
             if (
                 tx.from_address in CONTRACT_ADDRESSES_SET
                 or tx.to_address in CONTRACT_ADDRESSES_SET
             ):
+                used_transactions_count += 1
                 self.exporter.export_item(tx.to_dict())
             elif self._is_contract_in_access_list(tx.access_list):
                 self.exporter.export_item(tx.to_dict())
+                used_transactions_count += 1
+
+        block.used_transactions_count = used_transactions_count
+        self.exporter.export_item(block.to_dict())

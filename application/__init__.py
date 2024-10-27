@@ -11,10 +11,19 @@ jsonrpc = JSONRPC(app, "/api", enable_web_browsable_api=True)
 
 
 def get_reader_transaction(chain, partition):
-    return PartitionedReader(transaction_partition_dir(chain, partition), lambda x: x["hash"], lambda x, y: x["hash"] == y["hash"])
+    return PartitionedReader(
+        transaction_partition_dir(chain, partition),
+        lambda x: x["hash"],
+        lambda x, y: x["hash"] == y["hash"],
+    )
+
 
 def get_reader_contract(chain, partition):
-    return PartitionedReader(contract_partition_dir(chain, partition), contract_partition_key, contract_equality)
+    return PartitionedReader(
+        contract_partition_dir(chain, partition),
+        contract_partition_key,
+        contract_equality,
+    )
 
 
 chain = "eth"
@@ -30,3 +39,9 @@ def get_code(address: str, blockNumber: str) -> list:
 def get_transaction_by_hash(hash: str) -> list:
     reader = get_reader_transaction(chain, "hash")
     return reader.get_records({"hash": hash})
+
+
+@jsonrpc.method("eth_getBlockByNumber")
+def get_block_by_number(number: str) -> list:
+    reader = get_reader_transaction(chain, "block")
+    return reader.get_records({"block": number})
