@@ -3,10 +3,20 @@ from pathlib import Path
 
 
 class PartitionedReader:
-    def __init__(self, archive_location, partition_key, partition_depth) -> None:
+    def __init__(self, archive_location, partition_key) -> None:
         self.archive_location = archive_location
         self.partition_key = partition_key
-        self.partition_depth = partition_depth
+        self._read_depth_file()
+
+    def _get_depth_path(self):
+        return Path(self.archive_location) / Path("partition_depth.txt")
+
+    def _read_depth_file(self):
+        path = self._get_depth_path()
+        if path.is_file():
+            with path.open('r') as f:
+                self.partition_depth = int(f.read())
+
 
     def get_records(self, search_value):
         path = Path(self.archive_location) / Path(

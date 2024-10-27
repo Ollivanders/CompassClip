@@ -9,10 +9,16 @@ class PartitionedWriter:
         self.partition_depth = partition_depth
         self.dynamic_depth = dynamic_depth
         self.dynamic_depth_limit = dynamic_depth_limit
+
+        self._initialize_target_dir()
+
         if dynamic_depth:
             self._read_depth_file()
         self._write_depth_file()
 
+
+    def _initialize_target_dir(self):
+        Path(self.destination_folder).mkdir(parents=True, exist_ok=True)
 
     def _get_depth_path(self):
         return Path(self.destination_folder) / Path("partition_depth.txt")
@@ -44,7 +50,7 @@ class PartitionedWriter:
                     [
                         x
                         for x in file_data
-                        if PartitionedWriter.matches(x, "hash", new_data["hash"])
+                        if PartitionedWriter.matches(x, self.partition_key, new_data[self.partition_key])
                     ]
                 )
                 > 0
@@ -71,10 +77,10 @@ class PartitionedWriter:
         record_source - an iterator yielding json records
         """
         for record in record_source:
-            hash = record["hash"]
+            key = record[self.partition_key]
 
             dest_path = Path(self.destination_folder)
-            dst_path: Path = dest_path / Path(hash[: self.partition_depth] + ".json")
+            dst_path: Path = dest_path / Path(key[: self.partition_depth] + ".json")
 
             if dst_path.is_file():
                 self.append_json(record, dst_path)
@@ -113,7 +119,7 @@ if __name__ == "__main__":
             for line in f:
                 yield json.loads(line)
 
-    writer = PartitionedWriter("../sampledata/eth/partitioned/", "hash", partition_depth=4, dynamic_depth=True, dynamic_depth_limit=20)
+    writer = PartitionedWriter("../sampledata/eth/partitioned-contracts/", "address", partition_depth=4, dynamic_depth=True, dynamic_depth_limit=20)
     writer.write_split(
-        read_source("../sampledata/eth/transactions.json")
+        read_source("../sampledata/eth/contracts.json")
     )
