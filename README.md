@@ -1,5 +1,7 @@
 # CompassClip
 
+## Winner of Encode 2024 Hackathon - Compass Labs Shrink the Chain challenge
+
 Runs SuperSet JSON-RPC calls to a chain, storing the result in S3.
 
 Provides a wrapper library for making RPC calls to these files to collect desired information
@@ -13,6 +15,7 @@ initial sync takes chain, start block, end block as parameters. Indexing is uniq
 for parallel implementations while syncing varying block ranges do not overlap with each other.
 
 An example output running pruning on the eth chain:
+
 ```
 data
 └── eth
@@ -61,8 +64,8 @@ data
             └── partition_depth.txt
 ```
 
-
 ## Installation
+
 Run python3.11 or lower. It is recommended this project is run in venv.
 
 ```
@@ -75,6 +78,7 @@ varying dependencies to run. Inspiration on the mapper layout was taking from th
 extended with the partition writer and reader for faster retrieval of data.
 
 ## Syncing
+
 The data collection has already ran on a subset of blocks used for the examples below (the last
 10,000). This can be downloaded from s3 using the following command:
 
@@ -86,7 +90,6 @@ of the database.
 
 Syncing currently works using ankr rpc nodes, credits to which were provided by @Compass.
 
-
 ## Syncing yourself
 
 There is currently not a cli for configuring options, however the latest 1000 blocks can be synced
@@ -96,26 +99,28 @@ by running
 ## Making RPC calls
 
 Start the flask server by running
+
 ```bash
 python3 application/app.py
 ```
 
-
 ## Website version
+
 Remote hosted version
-http://35.179.186.61:5000
+<http://35.179.186.61:5000>
 
 Synced on:
+
 - eth chain
 - block ranges 21055431 - 21056431
 - the USDC contract address
 
-
-Then visit http://127.0.0.1:5000 for some examples as a frontend.
+Then visit <http://127.0.0.1:5000> for some examples as a frontend.
 
 ![frontend](docs/frontend.jpg)
 
 Query the api by hitting the json rpc endpoint with the following
+
 ```bash
 curl -i -X POST    -H "Content-Type: application/json; indent=4"    -d '{
     "jsonrpc": "2.0",
@@ -154,13 +159,13 @@ it unaware of the underlying data structure.
 - `eth_getCode`
 - `eth_getTransaction`
 
-https://docs.alchemy.com/reference/eth-gettransactionbyhash
+<https://docs.alchemy.com/reference/eth-gettransactionbyhash>
 
 ## Feature Improvements
 
-* As discussed below, use an Erigon node directly to hit the database directly and ignore the
+- As discussed below, use an Erigon node directly to hit the database directly and ignore the
   overhead of rpc calls.
-* facility for real time syncing to the chian, indexing storage say by block range
+- facility for real time syncing to the chian, indexing storage say by block range
 
 ## Alternative approach: Patching an Existing Chain
 
@@ -168,13 +173,13 @@ https://docs.alchemy.com/reference/eth-gettransactionbyhash
 
 Experimented with usage of mbdx.dat file that erigon uses.
 
-https://ethereum.org/en/developers/docs/nodes-and-clients/archive-nodes/#what-is-an-archive-node
-https://lmdb.readthedocs.io/en/release/ - lmdb, python client used to investigate database structure
+<https://ethereum.org/en/developers/docs/nodes-and-clients/archive-nodes/#what-is-an-archive-node>
+<https://lmdb.readthedocs.io/en/release/> - lmdb, python client used to investigate database structure
 on file
 
 ![took a while to download](docs/image.png)
 
-as specified at *https://github.com/erigontech/erigon/blob/main/ethdb/Readme.md*
+as specified at *<https://github.com/erigontech/erigon/blob/main/ethdb/Readme.md>*
 mdbx file format is a key-value database, utilising B+ trees in order to store reciept, transaction
 and block data in a mapping format.
 
@@ -233,13 +238,13 @@ and block data in a mapping format.
 ```
 
 Further details can be found at
-https://github.com/erigontech/erigon/blob/main/docs/programmers_guide/db_walkthrough.MD. While this
+<https://github.com/erigontech/erigon/blob/main/docs/programmers_guide/db_walkthrough.MD>. While this
 is an interesting read, it reveals about as much as the Dragon scroll did in the first Kung Fu Panda
 film.
 
 The key part here is the ethdb/kv-abstract.go implementation. An ideal solution would interface
 directly with the database using one of the methods described in
-https://github.com/erigontech/erigon/blob/main/docs/programmers_guide/db_faq.md. This by passes the
+<https://github.com/erigontech/erigon/blob/main/docs/programmers_guide/db_faq.md>. This by passes the
 rpc interface, thus as long as the file can be read either locally or via ssh-fs seek calls, one
 could utilise the `RoKV` interface that is provided to quickly make abstracted `eth_` calls to get
 the information required.
@@ -252,48 +257,44 @@ ability to "run on the chain".
 
 ![building new erigon mbdx.dat files](docs/image-1.png)
 
-
 The advantage of an mdbx.dat storage format is that an Erigon archive node would be able to read
 from it, thus enabling use of their existing `rpcdaemon` lib and native calls to a pruned private
 blockchain only containing relevant contract address information.
 
 To conclude, an approach of patching a node would require:
 
-* creating methods for writing to a new mdbx.dat file in the same format Erigon expects
-    * add new methods for back populating block data, deleting transactions for instance that do not
+- creating methods for writing to a new mdbx.dat file in the same format Erigon expects
+  - add new methods for back populating block data, deleting transactions for instance that do not
     meet certain requirements
-    * use existing methods of writing a new block by mining it on to a private chain, only including
+  - use existing methods of writing a new block by mining it on to a private chain, only including
       the filtered addresses. This however would invalidate checksums. This would either need to be
       ignored when the pruned node is queried or overwritten in some way and any errors thrown
       because of it discarded
-* hotfix the sync library to enable an option to migrate one mdbx.dat file to another
-* hope and pray the pruned mdbx.dat file is compatible
+- hotfix the sync library to enable an option to migrate one mdbx.dat file to another
+- hope and pray the pruned mdbx.dat file is compatible
 
 The above libs would have to be maintained with each Erigon node release for each support language
 (Rust, C++ and go)
 
 ### Anvil
 
-
 The following is the provision of the backend to the database following a pointer from
 CompassLabs. This would be a good place to start if looking to work with Anvil. Erigon was
 investigated primarily due to the size of the project by comparison but also cause the provided
 examples and node is an Erigon node.
 
-https://github.com/foundry-rs/foundry/blob/master/crates/anvil/src/eth/backend/db.rs
-
+<https://github.com/foundry-rs/foundry/blob/master/crates/anvil/src/eth/backend/db.rs>
 
 ### Geth
 
 Running a private pruned blockchain as a geth node.
 t
 
-* Fork an existing chain for study. Back delete unneeded transactions. This would however not allow
+- Fork an existing chain for study. Back delete unneeded transactions. This would however not allow
   clean resyncing
-* Sync on a polling basis to a new chain, mining each block on with only necessary transactions.
+- Sync on a polling basis to a new chain, mining each block on with only necessary transactions.
   This would not be a valid blockchain and would need be a new protocol specific for each chain and
   therefore a heavy approach.
-
 
 ### TheGraph
 
@@ -302,4 +303,4 @@ This can then provide a more searchable and faster response time then individual
 as a better response to getStorageAt. Creating a subgraph and then run such a service as above to
 convert to a No-SQL or otherwise format would provide a scalable prunable node.
 
-https://thegraph.com
+<https://thegraph.com>
